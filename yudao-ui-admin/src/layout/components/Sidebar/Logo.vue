@@ -35,7 +35,7 @@ export default {
   },
   data() {
     return {
-      title: '芋道管理系统',
+      title: '智慧候教务管理系统',
       logo: logoImg
     }
   }

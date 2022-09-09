@@ -104,6 +104,7 @@ public interface ErrorCodeConstants {
 
     // ========== 租户模块 1002014000 ==========
     ErrorCode TENANT_NOT_EXISTS = new ErrorCode(1002014000, "租户不存在");
+    ErrorCode STUDENT_NOT_EXISTS = new ErrorCode(1002014000, "学员不存在不存在");
 
     // ========== 错误码模块 1002015000 ==========
     ErrorCode ERROR_CODE_NOT_EXISTS = new ErrorCode(1002015000, "错误码不存在");
