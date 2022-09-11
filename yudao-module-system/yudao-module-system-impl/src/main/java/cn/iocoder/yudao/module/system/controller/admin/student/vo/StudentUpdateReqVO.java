@@ -11,8 +11,8 @@ import javax.validation.constraints.*;
 @ToString(callSuper = true)
 public class StudentUpdateReqVO extends StudentBaseVO {
 
-    @ApiModelProperty(value = "", required = true)
-    @NotNull(message = "不能为空")
+    @ApiModelProperty(value = "id", required = true)
+    @NotNull(message = "id不能为空")
     private Integer id;
 
 }

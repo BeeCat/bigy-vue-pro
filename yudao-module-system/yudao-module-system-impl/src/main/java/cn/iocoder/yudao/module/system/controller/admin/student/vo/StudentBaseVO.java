@@ -15,36 +15,42 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 @Data
 public class StudentBaseVO {
 
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(value = "姓名")
     private String name;
 
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(value = "年龄")
     private Integer age;
 
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(value = "小名")
+    private String title;
+
+    @ApiModelProperty(value = "生日")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private Date birthDay;
 
-    @ApiModelProperty(value = "")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private Date enterDate;
-
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(value = "地址")
     private String address;
 
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(value = "报名日期")
+    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    private Date offerDate;
+
+    @ApiModelProperty(value = "爸爸姓名")
     private String fatherName;
 
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(value = "妈妈姓名")
     private String motherName;
 
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(value = "爸爸手机号")
     private Integer fatherMobile;
 
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(value = "妈妈手机号")
     private Integer motherMobile;
 
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(value = "性别")
     private Integer sex;
+
+    @ApiModelProperty(value = "是否删除")
+    private Boolean deleted;
 
 }

@@ -1,9 +1,6 @@
 package cn.iocoder.yudao.module.system.convert.student;
 
-import java.util.*;
-
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-
 import cn.iocoder.yudao.module.system.controller.admin.student.vo.StudentCreateReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.student.vo.StudentExcelVO;
 import cn.iocoder.yudao.module.system.controller.admin.student.vo.StudentRespVO;
@@ -11,6 +8,9 @@ import cn.iocoder.yudao.module.system.controller.admin.student.vo.StudentUpdateR
 import cn.iocoder.yudao.module.system.dal.dataobject.student.StudentDO;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
+
+import java.util.List;
+
 
 /**
  * 学员管理 Convert

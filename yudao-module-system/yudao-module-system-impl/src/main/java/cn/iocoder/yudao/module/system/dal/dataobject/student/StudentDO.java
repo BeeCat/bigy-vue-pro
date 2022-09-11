@@ -20,48 +20,53 @@ import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 public class StudentDO extends BaseDO {
 
     /**
-     * 
+     * id
      */
     @TableId
     private Integer id;
     /**
-     * 
+     * 姓名
      */
     private String name;
     /**
-     * 
+     * 年龄
      */
     private Integer age;
     /**
-     * 
+     * 小名
+     */
+    private String title;
+    /**
+     * 生日
      */
     private Date birthDay;
     /**
-     * 
-     */
-    private Date enterDate;
-    /**
-     * 
+     * 地址
      */
     private String address;
     /**
-     * 
+     * 报名日期
+     */
+    private Date offerDate;
+    /**
+     * 爸爸姓名
      */
     private String fatherName;
     /**
-     * 
+     * 妈妈姓名
      */
     private String motherName;
     /**
-     * 
+     * 爸爸手机号
      */
     private Integer fatherMobile;
     /**
-     * 
+     * 妈妈手机号
      */
     private Integer motherMobile;
     /**
-     * 
+     * 性别
+     *
      */
     private Integer sex;
 

@@ -14,40 +14,46 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 @ToString(callSuper = true)
 public class StudentPageReqVO extends PageParam {
 
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(value = "姓名")
     private String name;
 
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(value = "年龄")
     private Integer age;
 
+    @ApiModelProperty(value = "小名")
+    private String title;
+
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(value = "生日")
     private Date birthDay;
 
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    @ApiModelProperty(value = "开始")
-    private Date beginEnterDate;
-
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    @ApiModelProperty(value = "结束")
-    private Date endEnterDate;
-
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(value = "地址")
     private String address;
 
-    @ApiModelProperty(value = "")
+    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    @ApiModelProperty(value = "开始报名日期")
+    private Date beginOfferDate;
+
+    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    @ApiModelProperty(value = "结束报名日期")
+    private Date endOfferDate;
+
+    @ApiModelProperty(value = "爸爸姓名")
     private String fatherName;
 
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(value = "妈妈姓名")
     private String motherName;
 
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(value = "爸爸手机号")
     private Integer fatherMobile;
 
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(value = "妈妈手机号")
     private Integer motherMobile;
 
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(value = "性别")
     private Integer sex;
+
+    @ApiModelProperty(value = "是否删除")
+    private Boolean deleted;
 
 }

@@ -10,7 +10,7 @@ import io.swagger.annotations.*;
 @ToString(callSuper = true)
 public class StudentRespVO extends StudentBaseVO {
 
-    @ApiModelProperty(value = "", required = true)
+    @ApiModelProperty(value = "id", required = true)
     private Integer id;
 
 }
