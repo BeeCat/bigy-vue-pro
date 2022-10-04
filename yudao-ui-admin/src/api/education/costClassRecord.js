@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-// 创建消课记录
+// 创建任课记录
 export function createCostClassRecord(data) {
   return request({
     url: '/zhh/cost-class-record/create',
@@ -9,7 +9,7 @@ export function createCostClassRecord(data) {
   })
 }
 
-// 更新消课记录
+// 更新任课记录
 export function updateCostClassRecord(data) {
   return request({
     url: '/zhh/cost-class-record/update',

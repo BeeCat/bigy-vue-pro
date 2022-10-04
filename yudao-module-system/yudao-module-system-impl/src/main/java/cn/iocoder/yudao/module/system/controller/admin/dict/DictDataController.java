@@ -66,6 +66,18 @@ public class DictDataController {
         return success(DictDataConvert.INSTANCE.convertList(list));
     }
 
+
+    @GetMapping("/list-type-simple")
+    @ApiOperation(value = "获得全部字典数据列表", notes = "一般用于管理后台缓存字典数据在本地")
+    // 无需添加权限认证，因为前端全局都需要
+    public CommonResult<List<DictDataSimpleRespVO>> listSimpleDictData(@RequestParam("dictType") String dictType ) {
+        DictDataExportReqVO reqVO = new DictDataExportReqVO();
+        reqVO.setDictType(dictType);
+        reqVO.setStatus(0);
+        List<DictDataDO> list = dictDataService.getDictDatas(reqVO);
+        return success(DictDataConvert.INSTANCE.convertList(list));
+    }
+
     @GetMapping("/page")
     @ApiOperation("/获得字典类型的分页列表")
     @PreAuthorize("@ss.hasPermission('system:dict:query')")

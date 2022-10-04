@@ -1,10 +1,7 @@
 package cn.iocoder.yudao.module.system.service.course;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.module.system.controller.admin.course.vo.CourseCreateReqVO;
-import cn.iocoder.yudao.module.system.controller.admin.course.vo.CourseExportReqVO;
-import cn.iocoder.yudao.module.system.controller.admin.course.vo.CoursePageReqVO;
-import cn.iocoder.yudao.module.system.controller.admin.course.vo.CourseUpdateReqVO;
+import cn.iocoder.yudao.module.system.controller.admin.course.vo.*;
 import cn.iocoder.yudao.module.system.dal.dataobject.course.CourseDO;
 
 import javax.validation.Valid;
@@ -72,4 +69,9 @@ public interface CourseService {
      */
     List<CourseDO> getCourseList(CourseExportReqVO exportReqVO);
 
+    /**
+     *
+     * @param updateReqVO
+     */
+    void assignCourse(CourseAssignReqVO updateReqVO);
 }

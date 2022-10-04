@@ -1,13 +1,15 @@
 package cn.iocoder.yudao.module.system.service.course;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.module.system.controller.admin.course.vo.CourseCreateReqVO;
-import cn.iocoder.yudao.module.system.controller.admin.course.vo.CourseExportReqVO;
-import cn.iocoder.yudao.module.system.controller.admin.course.vo.CoursePageReqVO;
-import cn.iocoder.yudao.module.system.controller.admin.course.vo.CourseUpdateReqVO;
+import cn.iocoder.yudao.module.system.controller.admin.course.vo.*;
+import cn.iocoder.yudao.module.system.controller.admin.courseClass.vo.CourseClassCreateReqVO;
 import cn.iocoder.yudao.module.system.convert.course.CourseConvert;
 import cn.iocoder.yudao.module.system.dal.dataobject.course.CourseDO;
+import cn.iocoder.yudao.module.system.dal.dataobject.dict.DictDataDO;
 import cn.iocoder.yudao.module.system.dal.mysql.course.CourseMapper;
+import cn.iocoder.yudao.module.system.service.courseClass.CourseClassService;
+import cn.iocoder.yudao.module.system.service.dict.DictDataService;
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -30,6 +32,15 @@ public class CourseServiceImpl implements CourseService {
 
     @Resource
     private CourseMapper courseMapper;
+
+    @Resource
+    private CourseClassService courseClassService;
+
+    /**
+     *
+     */
+    @Resource
+    private DictDataService dictDataService;
 
     @Override
     public Integer createCourse(CourseCreateReqVO createReqVO) {
@@ -81,6 +92,25 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public List<CourseDO> getCourseList(CourseExportReqVO exportReqVO) {
         return courseMapper.selectList(exportReqVO);
+    }
+
+    @Override
+    public void assignCourse(CourseAssignReqVO updateReqVO) {
+
+        CourseClassCreateReqVO classCreateReqVO = new CourseClassCreateReqVO();
+        String classTimeDicValue = updateReqVO.getClassTimeDicValue();
+        String classDicValue = updateReqVO.getClassDicValue();
+        DictDataDO timeDicDo = dictDataService.getDictData(Long.parseLong(classTimeDicValue));
+        DictDataDO classDictDo = dictDataService.getDictData(Long.parseLong(classDicValue));
+        classCreateReqVO.setName(updateReqVO.getCourseName() + "-" + classDictDo.getLabel() + "-" + timeDicDo.getLabel());
+        classCreateReqVO.setClassCode(111);
+        classCreateReqVO.setCourseCode(updateReqVO.getId());
+        classCreateReqVO.setClassRoomCode(updateReqVO.getClassRoomId());
+        classCreateReqVO.setTeacherCode(updateReqVO.getTeacherId());
+        classCreateReqVO.setClassDicValue(classDicValue);
+        classCreateReqVO.setClassTimeDicValue(classTimeDicValue);
+
+        courseClassService.createCourseClass(classCreateReqVO);
     }
 
 }

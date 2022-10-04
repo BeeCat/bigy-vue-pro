@@ -12,6 +12,11 @@ import lombok.Data;
 public class DictDataRespDTO {
 
     /**
+     * id
+     */
+    private String id;
+
+    /**
      * 字典标签
      */
     private String label;

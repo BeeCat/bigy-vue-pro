@@ -128,6 +128,15 @@ public interface AdminUserService {
      */
     List<AdminUserDO> getUsersByPostIds(Collection<Long> postIds);
 
+    AdminUserDO getUsersById(Long id);
+
+    /**
+     *
+     * @param postId
+     * @return
+     */
+    List<AdminUserDO> getUsersByPostId(Long postId);
+
     /**
      * 获得用户列表
      *

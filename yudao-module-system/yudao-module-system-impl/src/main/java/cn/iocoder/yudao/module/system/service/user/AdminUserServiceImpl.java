@@ -2,7 +2,6 @@ package cn.iocoder.yudao.module.system.service.user;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.io.IoUtil;
-import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.common.enums.CommonStatusEnum;
 import cn.iocoder.yudao.framework.common.exception.ServiceException;
@@ -20,6 +19,7 @@ import cn.iocoder.yudao.module.system.service.dept.DeptService;
 import cn.iocoder.yudao.module.system.service.dept.PostService;
 import cn.iocoder.yudao.module.system.service.permission.PermissionService;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -186,6 +186,29 @@ public class AdminUserServiceImpl implements AdminUserService {
         List<AdminUserDO> users = userMapper.selectList();
         users.removeIf(user -> !CollUtil.containsAny(user.getPostIds(), postIds));
         return users;
+    }
+
+    @Override
+    public AdminUserDO getUsersById(Long id) {
+        return userMapper.selectById(id);
+    }
+
+    @Override
+    public List<AdminUserDO> getUsersByPostId(Long postId) {
+       if (postId == null) {
+           return Lists.newArrayList();
+       }
+        // 过滤不符合条件的
+        List<AdminUserDO> users = userMapper.selectList();
+//        users.removeIf(user -> !CollUtil.containsAny(user.getPostIds(), postIds));
+        List<AdminUserDO> retUser = Lists.newArrayList();
+        users.forEach(user -> {
+            Set<Long> dbPostIdList = user.getPostIds();
+            if (CollUtil.isNotEmpty(dbPostIdList) && dbPostIdList.contains(postId)) {
+                retUser.add(user);
+            }
+        });
+        return retUser;
     }
 
     @Override

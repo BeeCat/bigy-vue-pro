@@ -14,6 +14,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.collection.MapUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.framework.operatelog.core.annotations.OperateLog;
+import com.google.common.collect.Sets;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -114,6 +115,19 @@ public class UserController {
     public CommonResult<List<UserSimpleRespVO>> getSimpleUsers() {
         // 获用户门列表，只要开启状态的
         List<AdminUserDO> list = userService.getUsersByStatus(CommonStatusEnum.ENABLE.getStatus());
+        // 排序后，返回给前端
+        return success(UserConvert.INSTANCE.convertList04(list));
+    }
+
+    /**
+     * 获取指定岗位的用户
+     * @return
+     */
+    @GetMapping("/list-post-simple")
+    @ApiOperation(value = "获取指定岗位的用户", notes = "只包含被开启的用户，主要用于前端的下拉选项")
+    public CommonResult<List<UserSimpleRespVO>> getPostUsers(@RequestParam("postId") Long postId) {
+        // 获用户门列表，只要开启状态的
+        List<AdminUserDO> list = userService.getUsersByPostId(postId);
         // 排序后，返回给前端
         return success(UserConvert.INSTANCE.convertList04(list));
     }

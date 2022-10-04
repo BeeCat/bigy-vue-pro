@@ -18,6 +18,15 @@ export function updateCourse(data) {
   })
 }
 
+// 更新课程
+export function assignCourse(data) {
+  return request({
+    url: '/education/course/assign',
+    method: 'put',
+    data: data
+  })
+}
+
 // 删除课程
 export function deleteCourse(id) {
   return request({

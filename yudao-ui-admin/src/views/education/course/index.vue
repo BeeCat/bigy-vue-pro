@@ -51,6 +51,8 @@
         <template slot-scope="scope">
           <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
                      v-hasPermi="['education:course:update']">修改</el-button>
+          <el-button size="mini" type="text" icon="el-icon-edit" @click="handleAssign(scope.row)"
+                     v-hasPermi="['education:course:assign']">排课</el-button>
           <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)"
                      v-hasPermi="['education:course:delete']">删除</el-button>
         </template>
@@ -78,11 +80,94 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!-- 对话框(分派) -->
+    <el-dialog :title="title" :visible.sync="openAssign" width="800px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <el-row>
+          <el-col span="8">
+            <el-form-item label="课程名称" prop="courseName" span = "8">
+              <el-input v-model="form.courseName" :disabled="true" placeholder="请输入课程名称" />
+            </el-form-item>
+          </el-col>
+          <el-col span="8">
+            <el-form-item label="课程编码" prop="courseCode" span = "8">
+              <el-input v-model="form.courseCode" :disabled="true" placeholder="请输入课程编码" />
+            </el-form-item>
+          </el-col>
+          <el-col span="8">
+            <el-form-item label="排课时长" prop="courseTime" span = "8">
+              <el-input v-model="form.courseTime" :disabled="true" placeholder="" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col span="12">
+            <el-form-item label="班级教室" prop="courseTime">
+              <el-select v-model="form.classRoomId" placeholder="请选择">
+                <el-option
+                  v-for="item in classRoomList"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col span="12">
+            <el-form-item label="班级老师" prop="courseTime">
+              <el-select v-model="form.teacherId" placeholder="请选择">
+                <el-option
+                  v-for="item in postUserList"
+                  :key="item.id"
+                  :label="item.nickname"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col span="12">
+            <el-form-item label="班级周几" prop="courseTime">
+              <el-select v-model="form.classDicValue" placeholder="请选择">
+                <el-option
+                  v-for="item in classDicDataList"
+                  :key="item.id"
+                  :label="item.label"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col span="12">
+            <el-form-item label="班级时间" prop="courseTime">
+              <el-select v-model="form.classTimeDicValue" placeholder="请选择">
+                <el-option
+                  v-for="item in timeDicDataList"
+                  :key="item.id"
+                  :label="item.label"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitAssign">确 定</el-button>
+        <el-button @click="cancelAssign">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { createCourse, updateCourse, deleteCourse, getCourse, getCoursePage, exportCourseExcel } from "@/api/education/course";
+import { createCourse, updateCourse, deleteCourse, getCourse, getCoursePage, exportCourseExcel, assignCourse } from "@/api/education/course";
+import { getClassRoomPage } from "@/api/assets/classRoom";
+import { getDicts } from "@/api/system/dict/data";
+import { listPostUsers } from "@/api/system/user";
 
 export default {
   name: "Course",
@@ -98,10 +183,17 @@ export default {
       total: 0,
       // 课程列表
       list: [],
+      classRoomList: [],
+      postUserList: [],
+      classDicDataList: [],
+      timeDicDataList: [],
+      time90DicDataList: [],
+      time120DicDataList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
       open: false,
+      openAssign: false,
       dateRangeCourseTime: [],
       dateRangeClassPlanTime: [],
       dateRangeCreateTime: [],
@@ -137,9 +229,52 @@ export default {
         this.loading = false;
       });
     },
+    /** 教室列表 */
+    getClassRoomList() {
+      this.loading = true;
+      // 处理查询参数
+      let params = {};
+
+      // 执行查询
+      getClassRoomPage(params).then(response => {
+        this.classRoomList = response.data.list;
+      });
+
+      listPostUsers(8).then(response => {
+        this.postUserList = response.data;
+      })
+    },
+    /** 教室列表 */
+    getDicData(courseTimeType) {
+
+      // 处理查询参数
+      let params = {};
+
+      // 排课-周几
+      getDicts('assign_class').then(response => {
+        this.classDicDataList = response.data;
+      });
+
+    if (courseTimeType == 1) {
+      // 排课时间1.5h
+      getDicts('assign_time_90').then(response => {
+        this.timeDicDataList = response.data;
+      });
+    } else {
+      // 排课时间2h
+      getDicts('assign_time_120').then(response => {
+        this.timeDicDataList = response.data;
+      });
+    }
+    },
     /** 取消按钮 */
     cancel() {
       this.open = false;
+      this.reset();
+    },
+    /** 取消按钮 */
+    cancelAssign() {
+      this.openAssign = false;
       this.reset();
     },
     /** 表单重置 */
@@ -181,6 +316,19 @@ export default {
         this.title = "修改课程";
       });
     },
+    /** 修改按钮操作 */
+    handleAssign(row) {
+      this.reset();
+      this.getClassRoomList();
+      this.getDicData(row.courseTime);
+
+      const id = row.id;
+      getCourse(id).then(response => {
+        this.form = response.data;
+        this.openAssign = true;
+        this.title = "分派课程";
+      });
+    },
     /** 提交按钮 */
     submitForm() {
       this.$refs["form"].validate(valid => {
@@ -203,6 +351,25 @@ export default {
           this.getList();
         });
       });
+    },
+    /** 提交按钮 */
+    submitAssign() {
+      // 修改的提交
+      if (this.form.id == null) {
+        this.msgError("无效的课程");
+        return;
+      }
+      // 修改的提交
+      if (this.form.classRoomId == null) {
+        this.msgError("请选择教室");
+        return;
+      }
+      assignCourse(this.form).then(response => {
+        this.msgSuccess("排课成功");
+        this.openAssign = false;
+        this.handleQuery()
+      });
+      return;
     },
     /** 删除按钮操作 */
     handleDelete(row) {

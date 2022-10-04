@@ -47,6 +47,13 @@ public class CourseController {
         return success(true);
     }
 
+    @PutMapping("/assign")
+    @ApiOperation("更新课程")
+    @PreAuthorize("@ss.hasPermission('education:course:update')")    public CommonResult<Boolean> assignCourse(@Valid @RequestBody CourseAssignReqVO updateReqVO) {
+        courseService.assignCourse(updateReqVO);
+        return success(true);
+    }
+
     @DeleteMapping("/delete")
     @ApiOperation("删除课程")
     @ApiImplicitParam(name = "id", value = "编号", required = true, dataTypeClass = Integer.class)

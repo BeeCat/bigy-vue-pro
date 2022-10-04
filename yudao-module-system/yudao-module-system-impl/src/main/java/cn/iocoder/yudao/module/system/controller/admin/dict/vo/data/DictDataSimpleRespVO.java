@@ -17,4 +17,7 @@ public class DictDataSimpleRespVO {
     @ApiModelProperty(value = "字典标签", required = true, example = "男")
     private String label;
 
+    @ApiModelProperty(value = "id", required = true, example = "1123")
+    private Long id;
+
 }
