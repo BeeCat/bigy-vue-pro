@@ -109,6 +109,7 @@ public interface ErrorCodeConstants {
     ErrorCode COURSE_NOT_EXISTS = new ErrorCode(1002014000, "课程不存在");
     ErrorCode CLASS_ROOM_NOT_EXISTS = new ErrorCode(1002014000, "课程不存在");
     ErrorCode COURSE_CLASS_NOT_EXISTS = new ErrorCode(1002014000, "课程不存在");
+    ErrorCode CLASS_STUDENT_NOT_EXISTS = new ErrorCode(1002014000, "课程不存在");
 
     // ========== 错误码模块 1002015000 ==========
     ErrorCode ERROR_CODE_NOT_EXISTS = new ErrorCode(1002015000, "错误码不存在");

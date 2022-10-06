@@ -60,7 +60,9 @@
           <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
                      v-hasPermi="['education:course-class:update']">修改</el-button>
           <el-button size="mini" type="text" icon="el-icon-edit" @click="handleStudent(scope.row)"
-                     v-hasPermi="['education:course-class:update']">学生</el-button>
+                     v-hasPermi="['education:course-class:student']">学员</el-button>
+          <el-button size="mini" type="text" icon="el-icon-edit" @click="handleClassing(scope.row)"
+                     v-hasPermi="['education:course-class:classing']">上课</el-button>
           <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)"
                      v-hasPermi="['education:course-class:delete']">删除</el-button>
         </template>
@@ -69,6 +71,7 @@
     <!-- 分页组件 -->
     <pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNo" :limit.sync="queryParams.pageSize"
                 @pagination="getList"/>
+
 
     <!-- 对话框(添加 / 修改) -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
@@ -103,11 +106,144 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!-- 对话框(学生) -->
+    <el-dialog :title="title" :visible.sync="openClassing" width="1000px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <el-row>
+          <el-col span="18">
+            <el-form-item label="班级名称" prop="name">
+              <el-input v-model="form.name" :disabled="true" placeholder="请输入课程名称" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <!-- 列表 -->
+              <el-table v-loading="loading" :data="classStudentList">
+              <el-table-column label="学员编号" align="center" prop="studentCode" />
+              <el-table-column label="学员姓名" align="center" prop="studentName" />
+              <el-table-column label="学员年龄" align="center" prop="studentAge" />
+              <el-table-column label="学员性别" align="center" prop="studentSex" />
+              <el-table-column label="学员地址" align="center" prop="studentAddress" />
+              <el-table-column label="创建时间" align="center" prop="createTime" width="180">
+                <template slot-scope="scope">
+                  <span>{{ parseTime(scope.row.createTime) }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+                <template slot-scope="scope">
+                  <el-button size="mini" type="text" icon="el-icon-edit" @click="handleStudentLater(scope.row)"
+                             v-hasPermi="['zhh:class-student:delete']">迟到</el-button>
+                  <el-button size="mini" type="text" icon="el-icon-edit" @click="handleStudentAssign(scope.row)"
+                             v-hasPermi="['zhh:class-student:delete']">签到</el-button>
+                  <el-button size="mini" type="text" icon="el-icon-edit" @click="handleStudentUnIn(scope.row)"
+                             v-hasPermi="['zhh:class-student:delete']">缺勤</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+
+        </el-row>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="cancelStudent">完成</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 对话框(学生) -->
+    <el-dialog :title="title" :visible.sync="openStudent" width="800px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <el-row>
+          <el-col span="18">
+            <el-form-item label="班级名称" prop="name">
+              <el-input v-model="form.name" :disabled="true" placeholder="请输入课程名称" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col span="12">
+            <el-form-item label="学员" prop="studentCode">
+              <el-select v-model="form.studentCode" @change="selectStudent" placeholder="请选择">
+                <el-option
+                  v-for="item in studentList"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col span="6">
+            <el-button type="primary" @click="submitStudent">添加</el-button>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col span="8">
+            <el-form-item label="学员姓名" prop="studentCode">
+               <el-input :disabled="true" v-model="selectedStudent.name" />
+            </el-form-item>
+          </el-col>
+
+          <el-col span="8">
+            <el-form-item label="学员年龄" prop="studentCode">
+               <el-input :disabled="true" v-model="selectedStudent.age" />
+            </el-form-item>
+          </el-col>
+
+          <el-col span="8">
+            <el-form-item label="学员性别" prop="studentCode">
+               <el-input :disabled="true" v-model="selectedStudent.sex" />
+            </el-form-item>
+          </el-col>
+
+        </el-row>
+        <el-row>
+          <el-col span="24">
+            <el-form-item label="学员地址" prop="studentCode">
+              <el-input v-model="selectedStudent.address"  :disabled="true" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <!-- 列表 -->
+              <el-table v-loading="loading" :data="classStudentList">
+              <el-table-column label="学员编号" align="center" prop="studentCode" />
+              <el-table-column label="学员姓名" align="center" prop="studentName" />
+              <el-table-column label="学员年龄" align="center" prop="studentAge" />
+              <el-table-column label="学员性别" align="center" prop="studentSex" />
+              <el-table-column label="学员地址" align="center" prop="studentAddress" />
+              <el-table-column label="创建时间" align="center" prop="createTime" width="180">
+                <template slot-scope="scope">
+                  <span>{{ parseTime(scope.row.createTime) }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+                <template slot-scope="scope">
+                  <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
+                             v-hasPermi="['zhh:class-student:update']">修改</el-button>
+                  <el-button size="mini" type="text" icon="el-icon-delete" @click="handleStudentDelete(scope.row)"
+                             v-hasPermi="['zhh:class-student:delete']">删除</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+            <!-- 分页组件 -->
+            <pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNo" :limit.sync="queryParams.pageSize"
+                        @pagination="getList"/>
+        </el-row>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="cancelStudent">完成</el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
 <script>
 import { createCourseClass, updateCourseClass, deleteCourseClass, getCourseClass, getCourseClassPage, exportCourseClassExcel } from "@/api/education/courseClass";
+import { createClassStudent, updateClassStudent, deleteClassStudent, getClassStudent, getClassStudentPage, exportClassStudentExcel } from "@/api/education/classStudent";
+import { get, getPage } from "@/api/student/student";
+
 
 export default {
   name: "CourseClass",
@@ -123,10 +259,15 @@ export default {
       total: 0,
       // 课程班级列表
       list: [],
+      studentList: [],
+      selectedStudent: {},
+      classStudentList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
       open: false,
+      openStudent: false,
+      openClassing: false,
       dateRangeClassPlanTime: [],
       dateRangeClassStartTime: [],
       dateRangeClassEndTime: [],
@@ -143,6 +284,9 @@ export default {
       },
       // 表单参数
       form: {},
+      studentParam: {},
+      classStudentParam: {},
+      studentForm: {},
       // 表单校验
       rules: {
       }
@@ -171,6 +315,16 @@ export default {
     /** 取消按钮 */
     cancel() {
       this.open = false;
+      this.reset();
+    },
+    /** 取消按钮 */
+    cancelStudent() {
+      this.openStudent = false;
+      this.reset();
+    },
+    /** 取消按钮 */
+    cancelClassing() {
+      this.openClassing = false;
       this.reset();
     },
     /** 表单重置 */
@@ -222,11 +376,19 @@ export default {
     handleStudent(row) {
       this.reset();
       const id = row.id;
-      getClassStudent(id).then(response => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改课程班级";
-      });
+      this.openStudent = true;
+      this.form = row;
+      this.getStudent();
+      this.getClassStudent();
+    },
+    /** 修改按钮操作 */
+    handleClassing(row) {
+      this.reset();
+      const id = row.id;
+      this.openClassing = true;
+      this.form = row;
+      this.getStudent();
+      this.getClassStudent();
     },
     /** 提交按钮 */
     submitForm() {
@@ -251,6 +413,34 @@ export default {
         });
       });
     },
+    selectStudent(id) {
+      get(id).then(response => {
+        this.selectedStudent = response.data
+      })
+    },
+    getClassStudent() {
+    this.classStudentParam = {classCode: this.form.classCode}
+      getClassStudentPage(this.classStudentParam).then(response => {
+        this.classStudentList = response.data.list
+      })
+    },
+    getStudent() {
+      getPage(this.studentParam).then(response => {
+        this.studentList = response.data.list
+      })
+    },
+    /** 提交按钮 */
+    submitStudent() {
+      createClassStudent({
+        classCode : this.form.classCode,
+        courseCode : this.form.courseCode,
+        studentCode : this.selectedStudent.id,
+        studentName : this.selectedStudent.name
+      }).then(response => {
+        this.getClassStudent()
+      })
+    },
+
     /** 删除按钮操作 */
     handleDelete(row) {
       const id = row.id;
@@ -262,6 +452,20 @@ export default {
           return deleteCourseClass(id);
         }).then(() => {
           this.getList();
+          this.msgSuccess("删除成功");
+        })
+    },
+    /** 删除按钮操作 */
+    handleStudentDelete(row) {
+      const id = row.id;
+      this.$confirm('是否确认删除课程班级编号为"' + id + '"的数据项?', "警告", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }).then(function() {
+          return deleteClassStudent(id);
+        }).then(() => {
+          this.getClassStudent();
           this.msgSuccess("删除成功");
         })
     },
