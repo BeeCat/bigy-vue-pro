@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.system.dal.dataobject.costClassRecord;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import java.util.*;
 import com.baomidou.mybatisplus.annotation.*;
@@ -31,15 +32,19 @@ public class CostClassRecordDO extends BaseDO {
     /**
      * 学生id
      */
-    private String studentCode;
+    private Integer studentCode;
     /**
      * 班级编码
      */
-    private String classCode;
+    private Integer classCode;
     /**
      * 课程编码
      */
-    private String courseCode;
+    private Integer courseCode;
+
+    @ApiModelProperty(value = "消课类型：1:到课；0:请假")
+    private Integer costClassType;
+
     /**
      * 消课老师
      */

@@ -117,6 +117,13 @@
             </el-form-item>
           </el-col>
         </el-row>
+        <el-row>
+          <el-col span="18">
+            <el-form-item label="课程内容" prop="name">
+              <el-input v-model="form.name" :disabled="true" placeholder="请输入课程名称" />
+            </el-form-item>
+          </el-col>
+        </el-row>
 
         <el-row>
           <!-- 列表 -->
@@ -133,12 +140,10 @@
               </el-table-column>
               <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
                 <template slot-scope="scope">
-                  <el-button size="mini" type="text" icon="el-icon-edit" @click="handleStudentLater(scope.row)"
-                             v-hasPermi="['zhh:class-student:delete']">迟到</el-button>
                   <el-button size="mini" type="text" icon="el-icon-edit" @click="handleStudentAssign(scope.row)"
-                             v-hasPermi="['zhh:class-student:delete']">签到</el-button>
+                             v-hasPermi="['zhh:class-student:delete']">到课</el-button>
                   <el-button size="mini" type="text" icon="el-icon-edit" @click="handleStudentUnIn(scope.row)"
-                             v-hasPermi="['zhh:class-student:delete']">缺勤</el-button>
+                             v-hasPermi="['zhh:class-student:delete']">请假</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -156,6 +161,9 @@
         <el-row>
           <el-col span="18">
             <el-form-item label="班级名称" prop="name">
+              <el-input v-model="form.name" :disabled="true" placeholder="请输入课程名称" />
+            </el-form-item>
+            <el-form-item label="课程内容" prop="name">
               <el-input v-model="form.name" :disabled="true" placeholder="请输入课程名称" />
             </el-form-item>
           </el-col>
@@ -242,6 +250,7 @@
 <script>
 import { createCourseClass, updateCourseClass, deleteCourseClass, getCourseClass, getCourseClassPage, exportCourseClassExcel } from "@/api/education/courseClass";
 import { createClassStudent, updateClassStudent, deleteClassStudent, getClassStudent, getClassStudentPage, exportClassStudentExcel } from "@/api/education/classStudent";
+import { createCostClassRecord, updateCostClassRecord, deleteCostClassRecord, getCostClassRecord, getCostClassRecordPage, exportCostClassRecordExcel } from "@/api/education/costClassRecord";
 import { get, getPage } from "@/api/student/student";
 
 
@@ -413,13 +422,35 @@ export default {
         });
       });
     },
+    // 到课
+    handleStudentAssign(row) {
+      createCostClassRecord({
+        studentCode: row.studentCode,
+        classCode: row.classCode,
+        courseCode: row.courseCode,
+        costClassType: 1
+      }).then(response => {
+          this.msgSuccess("到课成功");
+      })
+    },
+    // 请假
+    handleStudentUnIn(row) {
+      createCostClassRecord({
+        studentCode: row.studentCode,
+        classCode: row.classCode,
+        courseCode: row.courseCode,
+        costClassType: 0
+      }).then(response => {
+          this.msgSuccess("签到成功");
+      })
+    },
     selectStudent(id) {
       get(id).then(response => {
         this.selectedStudent = response.data
       })
     },
     getClassStudent() {
-    this.classStudentParam = {classCode: this.form.classCode}
+      this.classStudentParam = {classCode: this.form.id}
       getClassStudentPage(this.classStudentParam).then(response => {
         this.classStudentList = response.data.list
       })
@@ -432,7 +463,7 @@ export default {
     /** 提交按钮 */
     submitStudent() {
       createClassStudent({
-        classCode : this.form.classCode,
+        classCode : this.form.id,
         courseCode : this.form.courseCode,
         studentCode : this.selectedStudent.id,
         studentName : this.selectedStudent.name

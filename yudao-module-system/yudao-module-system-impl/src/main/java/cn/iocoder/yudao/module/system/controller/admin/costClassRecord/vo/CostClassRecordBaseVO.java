@@ -13,19 +13,19 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 * 如果子 VO 存在差异的字段，请不要添加到这里，影响 Swagger 文档生成
 */
 @Data
-public class CostClassRecordBaseVO {
+public class  CostClassRecordBaseVO {
 
     @ApiModelProperty(value = "姓名")
     private String name;
 
     @ApiModelProperty(value = "学生id")
-    private String studentCode;
+    private Integer studentCode;
 
     @ApiModelProperty(value = "班级编码")
-    private String classCode;
+    private Integer classCode;
 
     @ApiModelProperty(value = "课程编码")
-    private String courseCode;
+    private Integer courseCode;
 
     @ApiModelProperty(value = "消课老师")
     private String costTeacherCode;
@@ -35,6 +35,9 @@ public class CostClassRecordBaseVO {
 
     @ApiModelProperty(value = "课程内容编码")
     private String courseContentCode;
+
+    @ApiModelProperty(value = "消课类型：1:到课；0:请假")
+    private Integer costClassType;
 
     @ApiModelProperty(value = "消课时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
