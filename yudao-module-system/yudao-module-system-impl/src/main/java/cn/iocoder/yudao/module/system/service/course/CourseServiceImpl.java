@@ -103,12 +103,12 @@ public class CourseServiceImpl implements CourseService {
         DictDataDO timeDicDo = dictDataService.getDictData(Long.parseLong(classTimeDicValue));
         DictDataDO classDictDo = dictDataService.getDictData(Long.parseLong(classDicValue));
         classCreateReqVO.setName(updateReqVO.getCourseName() + "-" + classDictDo.getLabel() + "-" + timeDicDo.getLabel());
-        classCreateReqVO.setClassCode(111);
-        classCreateReqVO.setCourseCode(updateReqVO.getId());
+        classCreateReqVO.setClassCode(updateReqVO.getCourseCode() + "-" + classDictDo.getValue() + "-" + timeDicDo.getValue());
+        classCreateReqVO.setCourseCode(updateReqVO.getCourseCode());
         classCreateReqVO.setClassRoomCode(updateReqVO.getClassRoomId());
-        classCreateReqVO.setTeacherCode(updateReqVO.getTeacherId());
-        classCreateReqVO.setClassDicValue(classDicValue);
-        classCreateReqVO.setClassTimeDicValue(classTimeDicValue);
+        classCreateReqVO.setTeacherCode(String.valueOf(updateReqVO.getTeacherId()));
+        classCreateReqVO.setClassDicValue(classDictDo.getValue());
+        classCreateReqVO.setClassTimeDicValue(timeDicDo.getValue());
 
         courseClassService.createCourseClass(classCreateReqVO);
     }

@@ -19,16 +19,22 @@ public class  CostClassRecordBaseVO {
     private String name;
 
     @ApiModelProperty(value = "学生id")
-    private Integer studentCode;
+    private String studentCode;
+
+    @ApiModelProperty(value = "学生姓名")
+    private String studentName;
 
     @ApiModelProperty(value = "班级编码")
-    private Integer classCode;
+    private String classCode;
 
     @ApiModelProperty(value = "课程编码")
-    private Integer courseCode;
+    private String courseCode;
 
     @ApiModelProperty(value = "消课老师")
     private String costTeacherCode;
+
+    @ApiModelProperty(value = "消课老师")
+    private String costTeacherName;
 
     @ApiModelProperty(value = "课程记录编码")
     private String courseRecordCode;

@@ -251,18 +251,18 @@ export default {
       let params = {};
 
       // 排课-周几
-      getDicts('assign_class').then(response => {
+      getDicts('assign_class_week').then(response => {
         this.classDicDataList = response.data;
       });
 
-    if (courseTimeType == 1) {
+    if (courseTimeType === '90') {
       // 排课时间1.5h
-      getDicts('assign_time_90').then(response => {
+      getDicts('assign_class_time_90').then(response => {
         this.timeDicDataList = response.data;
       });
     } else {
       // 排课时间2h
-      getDicts('assign_time_120').then(response => {
+      getDicts('assign_class_time_120').then(response => {
         this.timeDicDataList = response.data;
       });
     }

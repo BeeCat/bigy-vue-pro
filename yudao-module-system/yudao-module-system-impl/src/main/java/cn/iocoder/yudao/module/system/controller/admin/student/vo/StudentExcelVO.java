@@ -44,11 +44,11 @@ public class StudentExcelVO {
     @ExcelProperty("妈妈姓名")
     private String motherName;
 
-    @ExcelProperty("爸爸手机号")
-    private Integer fatherMobile;
+    @ExcelProperty("家长手机号1")
+    private String fatherMobile;
 
-    @ExcelProperty("妈妈手机号")
-    private Integer motherMobile;
+    @ExcelProperty("家长手机号2")
+    private String motherMobile;
 
     @ExcelProperty(value = "性别", converter = DictConvert.class)
     @DictFormat("system_user_sex") // TODO 代码优化：建议设置到对应的 XXXDictTypeConstants 枚举类中

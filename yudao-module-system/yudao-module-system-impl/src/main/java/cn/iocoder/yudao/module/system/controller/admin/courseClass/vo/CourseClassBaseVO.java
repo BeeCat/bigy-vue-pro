@@ -19,19 +19,22 @@ public class CourseClassBaseVO {
     private String name;
 
     @ApiModelProperty(value = "班级编码")
-    private Integer classCode;
+    private String classCode;
 
     @ApiModelProperty(value = "课程编码")
-    private Integer courseCode;
+    private String courseCode;
 
     @ApiModelProperty(value = "消课老师")
-    private Integer teacherCode;
+    private String teacherCode;
 
     @ApiModelProperty(value = "课程排课时间")
     private String classPlanTime;
 
     @ApiModelProperty(value = "课程教室")
     private Integer classRoomCode;
+
+    @ApiModelProperty(value = "课程教室")
+    private String classRoomName;
 
     /**
      * 时间

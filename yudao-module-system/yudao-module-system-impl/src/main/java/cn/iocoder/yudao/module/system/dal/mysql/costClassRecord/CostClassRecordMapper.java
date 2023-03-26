@@ -22,6 +22,7 @@ public interface CostClassRecordMapper extends BaseMapperX<CostClassRecordDO> {
         return selectPage(reqVO, new LambdaQueryWrapperX<CostClassRecordDO>()
                 .likeIfPresent(CostClassRecordDO::getName, reqVO.getName())
                 .eqIfPresent(CostClassRecordDO::getStudentCode, reqVO.getStudentCode())
+                .eqIfPresent(CostClassRecordDO::getStudentName, reqVO.getStudentName())
                 .eqIfPresent(CostClassRecordDO::getClassCode, reqVO.getClassCode())
                 .eqIfPresent(CostClassRecordDO::getCourseCode, reqVO.getCourseCode())
                 .eqIfPresent(CostClassRecordDO::getCostTeacherCode, reqVO.getCostTeacherCode())

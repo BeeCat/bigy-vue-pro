@@ -20,6 +20,9 @@ public class CostClassRecordPageReqVO extends PageParam {
     @ApiModelProperty(value = "学生id")
     private String studentCode;
 
+    @ApiModelProperty(value = "学生id")
+    private String studentName;
+
     @ApiModelProperty(value = "班级编码")
     private String classCode;
 

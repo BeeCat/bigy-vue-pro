@@ -32,15 +32,19 @@ public class CostClassRecordDO extends BaseDO {
     /**
      * 学生id
      */
-    private Integer studentCode;
+    private String studentCode;
+    /**
+     * 学生id
+     */
+    private String studentName;
     /**
      * 班级编码
      */
-    private Integer classCode;
+    private String classCode;
     /**
      * 课程编码
      */
-    private Integer courseCode;
+    private String courseCode;
 
     @ApiModelProperty(value = "消课类型：1:到课；0:请假")
     private Integer costClassType;
@@ -49,6 +53,10 @@ public class CostClassRecordDO extends BaseDO {
      * 消课老师
      */
     private String costTeacherCode;
+    /**
+     * 消课老师
+     */
+    private String costTeacherName;
     /**
      * 课程记录编码
      */

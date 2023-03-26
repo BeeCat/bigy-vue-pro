@@ -47,9 +47,9 @@
       <el-table-column label="班级名称" align="center" prop="name" />
       <el-table-column label="课程编码" align="center" prop="courseCode" />
       <el-table-column label="任课老师" align="center" prop="teacherName" />
-      <el-table-column label="课程教室" align="center" prop="classRoomCode" />
-      <el-table-column label="课程周几" align="center" prop="classDicDesc" />
-      <el-table-column label="课程时间" align="center" prop="classTimeDicDesc" />
+      <el-table-column label="课程教室" align="center" prop="classRoomName" />
+      <el-table-column label="课程周几" align="center" prop="classTimeDicValue" :formatter="classWeekFormat"/>
+      <el-table-column label="课程时间" align="center" prop="classDicValue" :formatter="classTimeFormat" />
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
@@ -58,13 +58,13 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
-                     v-hasPermi="['education:course-class:update']">修改</el-button>
+                     v-hasPermi="['education:course-class:update']">修改班级</el-button>
           <el-button size="mini" type="text" icon="el-icon-edit" @click="handleStudent(scope.row)"
-                     v-hasPermi="['education:course-class:student']">学员</el-button>
+                     v-hasPermi="['education:course-class:student']">班级学员</el-button>
           <el-button size="mini" type="text" icon="el-icon-edit" @click="handleClassing(scope.row)"
-                     v-hasPermi="['education:course-class:classing']">上课</el-button>
+                     v-hasPermi="['education:course-class:classing']">上课考勤</el-button>
           <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)"
-                     v-hasPermi="['education:course-class:delete']">删除</el-button>
+                     v-hasPermi="['education:course-class:delete']">删除班级</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -83,22 +83,29 @@
           <el-input v-model="form.classCode" placeholder="请输入班级编码" />
         </el-form-item>
         <el-form-item label="课程编码" prop="courseCode">
-          <el-input v-model="form.courseCode" placeholder="请输入课程编码" />
+           <el-select v-model="form.courseCode" placeholder="请选课程" clearable style="width: 100%">
+              <el-option v-for="dict in courseList" :key="dict.courseCode" :label="dict.courseName" :value="dict.courseCode"/>
+            </el-select>
         </el-form-item>
         <el-form-item label="任课老师" prop="teacherName">
-          <el-input v-model="form.teacherName" placeholder="请输入任课老师" />
+          <el-select v-model="form.teacherCode" placeholder="请选择任课老师" clearable style="width: 100%">
+            <el-option v-for="dict in teacherList" :key="dict.id" :label="dict.nickname" :value="dict.id"/>
+          </el-select>
         </el-form-item>
-        <el-form-item label="课程排课时间" prop="classPlanTime">
-          <el-date-picker clearable size="small" v-model="form.classPlanTime" type="date" value-format="yyyy-MM-dd" placeholder="选择课程排课时间" />
-        </el-form-item>
-        <el-form-item label="课程老师" prop="classRoomCode">
-          <el-input v-model="form.classRoomCode" placeholder="请输入课程老师" />
+        <el-form-item label="课程教室" prop="classRoomCode">
+          <el-select v-model="form.classRoomCode" placeholder="请选择课程教室" clearable style="width: 100%">
+            <el-option v-for="dict in classRoomList" :key="dict.id" :label="dict.name" :value="dict.id"/>
+          </el-select>
         </el-form-item>
         <el-form-item label="课程周几" prop="classStartTime">
-          <el-date-picker clearable size="small" v-model="form.classDicDesc" type="date" value-format="yyyy-MM-dd" placeholder="选择课程周几" />
+          <el-select v-model="form.classTimeDicValue" placeholder="请选择课程周几" clearable style="width: 100%" >
+            <el-option v-for="dict in classWeekList" :key="dict.value" :label="dict.label" :value="dict.value"/>
+          </el-select>
         </el-form-item>
-        <el-form-item label="课程时间" prop="classEndTime">
-          <el-date-picker clearable size="small" v-model="form.classTimeDicDesc" type="date" value-format="yyyy-MM-dd" placeholder="选择课程时间" />
+        <el-form-item label="课程时长" prop="classEndTime">
+           <el-select v-model="form.classDicValue" placeholder="请选择课程时长" clearable style="width: 100%" >
+            <el-option v-for="dict in classTimeList" :key="dict.value" :label="dict.label" :value="dict.value"/>
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -119,12 +126,26 @@
         </el-row>
         <el-row>
           <el-col span="18">
-            <el-form-item label="课程内容" prop="name">
-              <el-input v-model="form.name" :disabled="true" placeholder="请输入课程名称" />
+            <el-form-item label="课程名称" prop="name">
+              <el-input v-model="form.courseCode" :disabled="true" placeholder="请输入课程名称" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col span="18">
+            <el-form-item label="课程老师" prop="name">
+              <el-input v-model="form.teacherName" :disabled="true" placeholder="请输入课程名称" />
             </el-form-item>
           </el-col>
         </el-row>
 
+        <el-row>
+          <el-col span="18">
+            <el-form-item label="课次编号" prop="name">
+              <el-input v-model="form.courseRecordCode" :disabled="true" placeholder="请输入课程名称" />
+            </el-form-item>
+          </el-col>
+        </el-row>
         <el-row>
           <!-- 列表 -->
               <el-table v-loading="loading" :data="classStudentList">
@@ -140,10 +161,10 @@
               </el-table-column>
               <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
                 <template slot-scope="scope">
-                  <el-button size="mini" type="text" icon="el-icon-edit" @click="handleStudentAssign(scope.row)"
-                             v-hasPermi="['zhh:class-student:delete']">到课</el-button>
-                  <el-button size="mini" type="text" icon="el-icon-edit" @click="handleStudentUnIn(scope.row)"
-                             v-hasPermi="['zhh:class-student:delete']">请假</el-button>
+                  <el-button size="mini" type="text" icon="el-icon-edit" @click="handleStudentAssign(form,scope.row)"
+                             v-hasPermi="['zhh:class-student:classing']">到课</el-button>
+                  <el-button size="mini" type="text" icon="el-icon-edit" @click="handleStudentUnIn(form, scope.row)"
+                             v-hasPermi="['zhh:class-student:unclass']">请假</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -163,20 +184,19 @@
             <el-form-item label="班级名称" prop="name">
               <el-input v-model="form.name" :disabled="true" placeholder="请输入课程名称" />
             </el-form-item>
-            <el-form-item label="课程内容" prop="name">
-              <el-input v-model="form.name" :disabled="true" placeholder="请输入课程名称" />
+            <el-form-item label="课程名称" prop="name">
+              <el-input v-model="form.courseCode" :disabled="true" placeholder="请输入课程名称" />
+            </el-form-item>
+            <el-form-item label="课程老师" prop="name">
+              <el-input v-model="form.teacherName" :disabled="true" placeholder="请输入课程名称" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col span="12">
             <el-form-item label="学员" prop="studentCode">
-              <el-select v-model="form.studentCode" @change="selectStudent" placeholder="请选择">
-                <el-option
-                  v-for="item in studentList"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id">
+              <el-select v-model="form.studentCode" filterable @change="selectStudent" placeholder="请选择">
+                <el-option v-for="item in studentList" :key="item.id" :label="item.name" :value="item.id">
                 </el-option>
               </el-select>
             </el-form-item>
@@ -248,6 +268,11 @@
 </template>
 
 <script>
+
+import { getDictDataLabel, getDictDatas, DICT_TYPE } from '@/utils/dict'
+import { getClassRoomPage } from "@/api/assets/classRoom";
+import { listPostUsers } from "@/api/system/user";
+import { getCoursePage } from "@/api/education/course";
 import { createCourseClass, updateCourseClass, deleteCourseClass, getCourseClass, getCourseClassPage, exportCourseClassExcel } from "@/api/education/courseClass";
 import { createClassStudent, updateClassStudent, deleteClassStudent, getClassStudent, getClassStudentPage, exportClassStudentExcel } from "@/api/education/classStudent";
 import { createCostClassRecord, updateCostClassRecord, deleteCostClassRecord, getCostClassRecord, getCostClassRecordPage, exportCostClassRecordExcel } from "@/api/education/costClassRecord";
@@ -296,6 +321,13 @@ export default {
       studentParam: {},
       classStudentParam: {},
       studentForm: {},
+      courseList:{},
+      teacherList:{},
+      classRoomList:{},
+      classWeekList:{},
+      classTimeList:{},
+      courseClassRecordList:{},
+      courseMap:{},
       // 表单校验
       rules: {
       }
@@ -303,6 +335,20 @@ export default {
   },
   created() {
     this.getList();
+    getCoursePage().then(response => {
+      this.courseList = response.data.list;
+      for(var index in this.courseList ) {
+        this.courseMap[this.courseList[index].courseCode] = this.courseList[index]
+      }
+    })
+    listPostUsers(8).then(response => {
+      this.teacherList = response.data;
+    })
+    getClassRoomPage().then(response => {
+      this.classRoomList = response.data.list;
+    })
+    this.classWeekList = getDictDatas(DICT_TYPE.ASSIGN_CLASS_WEEK)
+
   },
   methods: {
     /** 查询列表 */
@@ -320,6 +366,26 @@ export default {
         this.total = response.data.total;
         this.loading = false;
       });
+    },
+    courseChange() {
+      if (this.courseMap[this.form.courseCode].courseTime === "120") {
+        this.classTimeList = getDictDatas(DICT_TYPE.ASSIGN_CLASS_TIME_120)
+      } else {
+        this.classTimeList = getDictDatas(DICT_TYPE.ASSIGN_CLASS_TIME_90)
+      }
+    },
+     classWeekFormat(row, column) {
+      return getDictDataLabel(DICT_TYPE.ASSIGN_CLASS_WEEK, row.classDicValue)
+    },
+    classTimeFormat(row, column) {
+      if (!this.courseMap[row.courseCode]) {
+        return
+      }
+      if (this.courseMap[row.courseCode].courseTime === "120") {
+        return getDictDataLabel(DICT_TYPE.ASSIGN_CLASS_TIME_120, row.classTimeDicValue)
+      } else {
+        return getDictDataLabel(DICT_TYPE.ASSIGN_CLASS_TIME_90, row.classTimeDicValue)
+      }
     },
     /** 取消按钮 */
     cancel() {
@@ -378,7 +444,7 @@ export default {
       getCourseClass(id).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改课程班级";
+        this.title = "管理班级学员";
       });
     },
     /** 修改按钮操作 */
@@ -388,14 +454,17 @@ export default {
       this.openStudent = true;
       this.form = row;
       this.getStudent();
+      this.getClassRecordList();
       this.getClassStudent();
     },
-    /** 修改按钮操作 */
+    /** 上课按钮操作 */
     handleClassing(row) {
       this.reset();
       const id = row.id;
       this.openClassing = true;
       this.form = row;
+      var date = new Date();
+      this.form.courseRecordCode = date.getFullYear() +''+ (date.getMonth() + 1) + date.getDate() + '-' + date.getDay() + '-' + row.teacherCode + '-' + row.classDicValue + '-' + row.classTimeDicValue
       this.getStudent();
       this.getClassStudent();
     },
@@ -423,22 +492,26 @@ export default {
       });
     },
     // 到课
-    handleStudentAssign(row) {
+    handleStudentAssign(form, row) {
       createCostClassRecord({
         studentCode: row.studentCode,
-        classCode: row.classCode,
-        courseCode: row.courseCode,
+        studentName: row.studentName,
+        classCode: form.classCode,
+        courseCode: form.courseCode,
+        courseRecordCode: form.courseRecordCode,
         costClassType: 1
       }).then(response => {
           this.msgSuccess("到课成功");
       })
     },
     // 请假
-    handleStudentUnIn(row) {
+    handleStudentUnIn(form, row) {
       createCostClassRecord({
         studentCode: row.studentCode,
-        classCode: row.classCode,
-        courseCode: row.courseCode,
+        studentName: row.studentName,
+        classCode: form.classCode,
+        courseCode: form.courseCode,
+        courseRecordCode: form.courseRecordCode,
         costClassType: 0
       }).then(response => {
           this.msgSuccess("签到成功");
@@ -453,6 +526,12 @@ export default {
       this.classStudentParam = {classCode: this.form.id}
       getClassStudentPage(this.classStudentParam).then(response => {
         this.classStudentList = response.data.list
+      })
+    },
+    getClassRecordList() {
+      this.classRecordParam = {classCode: this.form.id}
+      getCostClassRecordPage(this.classRecordParam).then(response => {
+
       })
     },
     getStudent() {

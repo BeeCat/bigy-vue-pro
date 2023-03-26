@@ -12,12 +12,6 @@
       <el-form-item label="小名" prop="title">
         <el-input v-model="queryParams.title" placeholder="请输入小名" clearable size="small" @keyup.enter.native="handleQuery"/>
       </el-form-item>
-      <el-form-item label="生日" prop="birthDay">
-        <el-input v-model="queryParams.birthDay" placeholder="请输入生日" clearable size="small" @keyup.enter.native="handleQuery"/>
-      </el-form-item>
-      <el-form-item label="地址" prop="address">
-        <el-input v-model="queryParams.address" placeholder="请输入地址" clearable size="small" @keyup.enter.native="handleQuery"/>
-      </el-form-item>
       <el-form-item label="报名日期">
         <el-date-picker v-model="dateRangeOfferDate" size="small" style="width: 240px" value-format="yyyy-MM-dd"
                         type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" />
@@ -27,12 +21,6 @@
       </el-form-item>
       <el-form-item label="妈妈姓名" prop="motherName">
         <el-input v-model="queryParams.motherName" placeholder="请输入妈妈姓名" clearable size="small" @keyup.enter.native="handleQuery"/>
-      </el-form-item>
-      <el-form-item label="爸爸手机号" prop="fatherMobile">
-        <el-input v-model="queryParams.fatherMobile" placeholder="请输入爸爸手机号" clearable size="small" @keyup.enter.native="handleQuery"/>
-      </el-form-item>
-      <el-form-item label="妈妈手机号" prop="motherMobile">
-        <el-input v-model="queryParams.motherMobile" placeholder="请输入妈妈手机号" clearable size="small" @keyup.enter.native="handleQuery"/>
       </el-form-item>
       <el-form-item label="性别" prop="sex">
         <el-select v-model="queryParams.sex" placeholder="请选择性别" clearable size="small">
@@ -61,30 +49,29 @@
 
     <!-- 列表 -->
     <el-table v-loading="loading" :data="list">
-      <el-table-column label="id" align="center" prop="id" />
       <el-table-column label="姓名" align="center" prop="name" />
-      <el-table-column label="年龄" align="center" prop="age" />
-      <el-table-column label="小名" align="center" prop="title" />
-      <el-table-column label="生日" align="center" prop="birthDay" width="180">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.birthDay) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="地址" align="center" prop="address" />
-      <el-table-column label="报名日期" align="center" prop="offerDate" width="180">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.offerDate) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="爸爸姓名" align="center" prop="fatherName" />
-      <el-table-column label="妈妈姓名" align="center" prop="motherName" />
-      <el-table-column label="爸爸手机号" align="center" prop="fatherMobile" />
-      <el-table-column label="妈妈手机号" align="center" prop="motherMobile" />
       <el-table-column label="性别" align="center" prop="sex">
         <template slot-scope="scope">
           <span>{{ getDictDataLabel(DICT_TYPE.SYSTEM_USER_SEX, scope.row.sex) }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="年龄" align="center" prop="age" />
+      <el-table-column label="小名" align="center" prop="title" />
+      <el-table-column label="生日" align="center" prop="birthDay" width="100">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.birthDay, '{y}-{m}-{d}') }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="地址" align="center" prop="address" />
+      <el-table-column label="报名日期" align="center" prop="offerDate" width="100">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.offerDate, '{y}-{m}-{d}') }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="爸爸姓名" align="center" prop="fatherName" />
+      <el-table-column label="妈妈姓名" align="center" prop="motherName" />
+      <el-table-column label="手机1" align="center" prop="fatherMobile" width="120" />
+      <el-table-column label="手机2" align="center" prop="motherMobile" width="120" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
@@ -104,20 +91,26 @@
         <el-form-item label="姓名" prop="name">
           <el-input v-model="form.name" placeholder="请输入姓名" />
         </el-form-item>
-        <el-form-item label="年龄" prop="age">
-          <el-input v-model="form.age" placeholder="请输入年龄" />
-        </el-form-item>
         <el-form-item label="小名" prop="title">
           <el-input v-model="form.title" placeholder="请输入小名" />
         </el-form-item>
+        <el-form-item label="性别" prop="sex">
+          <el-radio-group v-model="form.sex">
+            <el-radio v-for="dict in this.getDictDatas(DICT_TYPE.SYSTEM_USER_SEX)"
+                      :key="dict.value" :label="parseInt(dict.value)">{{dict.label}}</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="年龄" prop="age">
+          <el-input v-model="form.age" placeholder="请输入年龄" @change="ageChange()" />
+        </el-form-item>
         <el-form-item label="生日" prop="birthDay">
-          <el-date-picker clearable size="small" v-model="form.birthDay" type="date" value-format="yyyy-MM-dd" placeholder="选择生日" />
+          <el-date-picker clearable v-model="form.birthDay" type="date" @change="birthChange()" value-format="yyyy-MM-dd" placeholder="选择生日" />
         </el-form-item>
         <el-form-item label="地址" prop="address">
           <el-input v-model="form.address" placeholder="请输入地址" />
         </el-form-item>
         <el-form-item label="报名日期" prop="offerDate">
-          <el-date-picker clearable size="small" v-model="form.offerDate" type="date" value-format="yyyy-MM-dd" placeholder="选择报名日期" />
+          <el-date-picker clearable v-model="form.offerDate" type="date" value-format="yyyy-MM-dd" placeholder="选择报名日期" />
         </el-form-item>
         <el-form-item label="爸爸姓名" prop="fatherName">
           <el-input v-model="form.fatherName" placeholder="请输入爸爸姓名" />
@@ -125,17 +118,11 @@
         <el-form-item label="妈妈姓名" prop="motherName">
           <el-input v-model="form.motherName" placeholder="请输入妈妈姓名" />
         </el-form-item>
-        <el-form-item label="爸爸手机号" prop="fatherMobile">
-          <el-input v-model="form.fatherMobile" placeholder="请输入爸爸手机号" />
+        <el-form-item label="手机1" prop="fatherMobile">
+          <el-input v-model="form.fatherMobile" placeholder="请输入爸爸手机" />
         </el-form-item>
-        <el-form-item label="妈妈手机号" prop="motherMobile">
-          <el-input v-model="form.motherMobile" placeholder="请输入妈妈手机号" />
-        </el-form-item>
-        <el-form-item label="性别" prop="sex">
-          <el-radio-group v-model="form.sex">
-            <el-radio v-for="dict in this.getDictDatas(DICT_TYPE.SYSTEM_USER_SEX)"
-                      :key="dict.value" :label="parseInt(dict.value)">{{dict.label}}</el-radio>
-          </el-radio-group>
+        <el-form-item label="手机2" prop="motherMobile">
+          <el-input v-model="form.motherMobile" placeholder="请输入妈妈手机" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -258,6 +245,15 @@ export default {
         this.open = true;
         this.title = "修改学员管理";
       });
+    },
+    ageChange() {
+      var date = new Date();
+      var birthYear = date.getFullYear() - this.form.age ;
+      this.form.birthDay =  new Date(birthYear,1,1);
+    },
+    birthChange() {
+      var date = new Date();
+      this.form.age = date.getFullYear() - new Date(this.form.birthDay).getFullYear() ;
     },
     /** 提交按钮 */
     submitForm() {

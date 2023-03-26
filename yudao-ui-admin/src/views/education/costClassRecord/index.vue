@@ -1,28 +1,32 @@
 <template>
   <div class="app-container">
 
-    <!-- 搜索工作栏 -->
+    <!-- 搜索工作栏  -->
     <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="姓名" prop="name">
-        <el-input v-model="queryParams.name" placeholder="请输入姓名" clearable size="small" @keyup.enter.native="handleQuery"/>
-      </el-form-item>
-      <el-form-item label="学生id" prop="studentCode">
-        <el-input v-model="queryParams.studentCode" placeholder="请输入学生id" clearable size="small" @keyup.enter.native="handleQuery"/>
+        <el-select v-model="form.studentCode" filterable placeholder="请选择">
+          <el-option v-for="item in studentList" :key="item.id" :label="item.name" :value="item.id">
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="班级编码" prop="classCode">
-        <el-input v-model="queryParams.classCode" placeholder="请输入班级编码" clearable size="small" @keyup.enter.native="handleQuery"/>
+          <el-select v-model="form.classCode" placeholder="请选择">
+            <el-option v-for="item in courseClassList" :key="item.id" :label="item.name" :value="item.id">
+            </el-option>
+           </el-select>
       </el-form-item>
-      <el-form-item label="课程编码" prop="courseCode">
-        <el-input v-model="queryParams.courseCode" placeholder="请输入课程编码" clearable size="small" @keyup.enter.native="handleQuery"/>
+      <el-form-item label="请选课程" prop="courseCode">
+         <el-select v-model="queryParams.courseCode" placeholder="请选课程" @change="courseChange()" clearable style="width: 100%">
+            <el-option v-for="dict in courseList" :key="dict.courseCode" :label="dict.courseName" :value="dict.courseCode"/>
+          </el-select>
       </el-form-item>
       <el-form-item label="消课老师" prop="costTeacherCode">
-        <el-input v-model="queryParams.costTeacherCode" placeholder="请输入消课老师" clearable size="small" @keyup.enter.native="handleQuery"/>
+        <el-select v-model="queryParams.costTeacherCode" placeholder="请选择任课老师" clearable style="width: 100%" @keyup.enter.native="handleQuery">
+          <el-option v-for="dict in teacherList" :key="dict.id" :label="dict.nickname" :value="dict.id"/>
+        </el-select>
       </el-form-item>
-      <el-form-item label="课程记录编码" prop="courseRecordCode">
+      <el-form-item label="课程课次" prop="courseRecordCode">
         <el-input v-model="queryParams.courseRecordCode" placeholder="请输入课程记录编码" clearable size="small" @keyup.enter.native="handleQuery"/>
-      </el-form-item>
-      <el-form-item label="课程内容编码" prop="courseContentCode">
-        <el-input v-model="queryParams.courseContentCode" placeholder="请输入课程内容编码" clearable size="small" @keyup.enter.native="handleQuery"/>
       </el-form-item>
       <el-form-item label="消课时间">
         <el-date-picker v-model="dateRangeCostTime" size="small" style="width: 240px" value-format="yyyy-MM-dd"
@@ -53,23 +57,17 @@
 
     <!-- 列表 -->
     <el-table v-loading="loading" :data="list">
-      <el-table-column label="" align="center" prop="id" />
-      <el-table-column label="姓名" align="center" prop="name" />
-      <el-table-column label="学生id" align="center" prop="studentCode" />
+      <el-table-column label="课程课次" align="center" prop="courseRecordCode" />
+      <el-table-column label="学员编号" align="center" prop="studentCode" />
+      <el-table-column label="学员姓名" align="center" prop="studentName" />
       <el-table-column label="班级编码" align="center" prop="classCode" />
       <el-table-column label="课程编码" align="center" prop="courseCode" />
-      <el-table-column label="消课老师" align="center" prop="costTeacherCode" />
-      <el-table-column label="课程记录编码" align="center" prop="courseRecordCode" />
-      <el-table-column label="课程内容编码" align="center" prop="courseContentCode" />
+      <el-table-column label="消课老师" align="center" prop="costTeacherName" />
       <el-table-column label="消课时间" align="center" prop="costTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.costTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.createTime) }}</span>
-        </template>
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -122,6 +120,10 @@
 
 <script>
 import { createCostClassRecord, updateCostClassRecord, deleteCostClassRecord, getCostClassRecord, getCostClassRecordPage, exportCostClassRecordExcel } from "@/api/education/costClassRecord";
+import { listPostUsers } from "@/api/system/user";
+import { getCoursePage } from "@/api/education/course";
+import { get, getPage } from "@/api/student/student";
+import {  getCourseClassPage } from "@/api/education/courseClass";
 
 export default {
   name: "CostClassRecord",
@@ -141,6 +143,10 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
+      teacherList: [],
+      studentList: [],
+      courseClassList: [],
+      courseList:{},
       dateRangeCostTime: [],
       dateRangeCreateTime: [],
       // 查询参数
@@ -164,6 +170,21 @@ export default {
   },
   created() {
     this.getList();
+    getCoursePage().then(response => {
+      this.courseList = response.data.list;
+      for(var index in this.courseList ) {
+        this.courseMap[this.courseList[index].courseCode] = this.courseList[index]
+      }
+    })
+    listPostUsers(8).then(response => {
+      this.teacherList = response.data;
+    })
+    getPage().then(response => {
+        this.studentList = response.data.list
+    })
+    getCourseClassPage().then(response => {
+        this.courseClassList = response.data.list
+    })
   },
   methods: {
     /** 查询列表 */

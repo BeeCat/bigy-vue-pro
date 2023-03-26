@@ -42,11 +42,11 @@ public class StudentExportReqVO {
     @ApiModelProperty(value = "妈妈姓名")
     private String motherName;
 
-    @ApiModelProperty(value = "爸爸手机号")
-    private Integer fatherMobile;
+    @ApiModelProperty(value = "家长手机号1")
+    private String fatherMobile;
 
-    @ApiModelProperty(value = "妈妈手机号")
-    private Integer motherMobile;
+    @ApiModelProperty(value = "家长手机号2")
+    private String motherMobile;
 
     @ApiModelProperty(value = "性别")
     private Integer sex;

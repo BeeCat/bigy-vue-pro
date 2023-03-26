@@ -3,10 +3,12 @@ package cn.iocoder.yudao.module.system.service.courseClass;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.system.controller.admin.courseClass.vo.*;
 import cn.iocoder.yudao.module.system.convert.courseClass.CourseClassConvert;
+import cn.iocoder.yudao.module.system.dal.dataobject.classRoom.ClassRoomDO;
 import cn.iocoder.yudao.module.system.dal.dataobject.courseClass.CourseClassDO;
 import cn.iocoder.yudao.module.system.dal.dataobject.dict.DictDataDO;
 import cn.iocoder.yudao.module.system.dal.dataobject.user.AdminUserDO;
 import cn.iocoder.yudao.module.system.dal.mysql.courseClass.CourseClassMapper;
+import cn.iocoder.yudao.module.system.service.classRoom.ClassRoomService;
 import cn.iocoder.yudao.module.system.service.dict.DictDataService;
 import cn.iocoder.yudao.module.system.service.user.AdminUserService;
 import org.springframework.stereotype.Service;
@@ -34,6 +36,9 @@ public class CourseClassServiceImpl implements CourseClassService {
 
     @Resource
     private DictDataService dictDataService;
+
+    @Resource
+    private ClassRoomService classRoomService;
 
     /**
      *
@@ -90,18 +95,25 @@ public class CourseClassServiceImpl implements CourseClassService {
         respVOPageResult.getList().forEach(cc -> {
             String classDicValue = cc.getClassDicValue();
             String classTimeDicValue = cc.getClassTimeDicValue();
-            if (classDicValue != null) {
-                DictDataDO dicDo = dictDataService.getDictData(Long.parseLong(classDicValue));
-                cc.setClassDicDesc(dicDo.getLabel());
-            }
-            if (classTimeDicValue != null) {
-                DictDataDO timeDicDo = dictDataService.getDictData(Long.parseLong(classTimeDicValue));
-                cc.setClassTimeDicDesc(timeDicDo.getLabel());
-            }
-            Integer teacherCode = cc.getTeacherCode();
+//            if (classDicValue != null) {
+//                DictDataDO dicDo = dictDataService.getdict(classDicValue);
+//                cc.setClassDicDesc(dicDo.getLabel());
+//            }
+//            if (classTimeDicValue != null) {
+//                DictDataDO timeDicDo = dictDataService.getDictData(Long.parseLong(classTimeDicValue));
+//                cc.setClassTimeDicDesc(timeDicDo.getLabel());
+//            }
+            String teacherCode = cc.getTeacherCode();
             if (teacherCode != null) {
-                AdminUserDO user = adminUserService.getUser(teacherCode.longValue());
+                AdminUserDO user = adminUserService.getUser(Long.parseLong(teacherCode));
                 cc.setTeacherName(user.getNickname());
+            }
+            Integer classRoomCode = cc.getClassRoomCode();
+            if (classRoomCode != null) {
+                ClassRoomDO classRoom = classRoomService.getClassRoom(classRoomCode);
+                if (classRoom != null) {
+                    cc.setClassRoomName(classRoom.getName());
+                }
             }
         });
         return respVOPageResult;

@@ -43,12 +43,10 @@
 
     <!-- 列表 -->
     <el-table v-loading="loading" :data="list">
-      <el-table-column label="" align="center" prop="id" />
-      <el-table-column label="姓名" align="center" prop="name" />
+      <el-table-column label="学员编号" align="center" prop="studentCode" />
+      <el-table-column label="学员姓名" align="center" prop="studentName" />
       <el-table-column label="班级编码" align="center" prop="classCode" />
       <el-table-column label="课程编码" align="center" prop="courseCode" />
-      <el-table-column label="班级学生" align="center" prop="studentCode" />
-      <el-table-column label="班级姓名" align="center" prop="studentName" />
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>

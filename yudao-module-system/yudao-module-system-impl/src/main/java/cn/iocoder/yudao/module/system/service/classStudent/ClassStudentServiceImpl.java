@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.system.service.classStudent;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.system.controller.admin.classStudent.vo.*;
 import cn.iocoder.yudao.module.system.controller.admin.courseClass.vo.CourseClassRespVO;
@@ -9,6 +10,7 @@ import cn.iocoder.yudao.module.system.dal.dataobject.classStudent.ClassStudentDO
 import cn.iocoder.yudao.module.system.dal.dataobject.student.StudentDO;
 import cn.iocoder.yudao.module.system.dal.mysql.classStudent.ClassStudentMapper;
 import cn.iocoder.yudao.module.system.service.student.StudentService;
+import com.google.common.base.Preconditions;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -39,6 +41,13 @@ public class ClassStudentServiceImpl implements ClassStudentService {
     public Integer createClassStudent(ClassStudentCreateReqVO createReqVO) {
         // 插入
         ClassStudentDO classStudent = ClassStudentConvert.INSTANCE.convert(createReqVO);
+        String classCode = classStudent.getClassCode();
+        String studentCode = classStudent.getStudentCode();
+        ClassStudentPageReqVO reqVO = new ClassStudentPageReqVO();
+        reqVO.setClassCode(classCode);
+        reqVO.setStudentCode(studentCode);
+        PageResult<ClassStudentRespVO> classStudentPage = getClassStudentPage(reqVO);
+        Preconditions.checkArgument(CollectionUtil.isEmpty(classStudentPage.getList()), "班级已有该学生");
         classStudentMapper.insert(classStudent);
         // 返回
         return classStudent.getId();
@@ -84,10 +93,12 @@ public class ClassStudentServiceImpl implements ClassStudentService {
         respVOPageResult.getList().forEach(classStudentRespVO -> {
             String studentCode = classStudentRespVO.getStudentCode();
             StudentDO studentDO = studentService.get(Integer.parseInt(studentCode));
-            classStudentRespVO.setStudentName(studentDO.getName());
-            classStudentRespVO.setStudentAge(studentDO.getAge());
-            classStudentRespVO.setStudentSex(studentDO.getSex() == 1 ? "男" : "女");
-            classStudentRespVO.setStudentAddress(studentDO.getAddress());
+            if (studentDO != null) {
+                classStudentRespVO.setStudentName(studentDO.getName());
+                classStudentRespVO.setStudentAge(studentDO.getAge());
+                classStudentRespVO.setStudentSex(studentDO.getSex() == 1 ? "男" : "女");
+                classStudentRespVO.setStudentAddress(studentDO.getAddress());
+            }
         });
         return respVOPageResult;
     }

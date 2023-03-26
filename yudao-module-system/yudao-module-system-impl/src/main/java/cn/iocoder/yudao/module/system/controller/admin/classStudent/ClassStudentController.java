@@ -12,6 +12,7 @@ import cn.iocoder.yudao.module.system.service.classStudent.ClassStudentService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -23,9 +24,11 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
+import static cn.iocoder.yudao.framework.common.pojo.CommonResult.error;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 import static cn.iocoder.yudao.framework.operatelog.core.enums.OperateTypeEnum.EXPORT;
 
+@Slf4j
 @Api(tags = "管理后台 - 班级学生")
 @RestController
 @RequestMapping("/zhh/class-student")
@@ -38,7 +41,13 @@ public class ClassStudentController {
     @PostMapping("/create")
     @ApiOperation("创建班级学生")
     @PreAuthorize("@ss.hasPermission('zhh:class-student:create')")    public CommonResult<Integer> createClassStudent(@Valid @RequestBody ClassStudentCreateReqVO createReqVO) {
-        return success(classStudentService.createClassStudent(createReqVO));
+        try {
+            Integer classStudent = classStudentService.createClassStudent(createReqVO);
+            return success(classStudent);
+        } catch (Exception e) {
+            log.error("创建消课记录-error", e);
+            return error(400, e.getMessage());
+        }
     }
 
     @PutMapping("/update")

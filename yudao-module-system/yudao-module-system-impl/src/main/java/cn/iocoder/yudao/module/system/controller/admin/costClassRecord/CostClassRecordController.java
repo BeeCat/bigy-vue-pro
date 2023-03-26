@@ -11,6 +11,7 @@ import cn.iocoder.yudao.module.system.service.costClassRecord.CostClassRecordSer
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
+import static cn.iocoder.yudao.framework.common.pojo.CommonResult.error;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 import static cn.iocoder.yudao.framework.operatelog.core.enums.OperateTypeEnum.EXPORT;
 
@@ -29,6 +31,7 @@ import static cn.iocoder.yudao.framework.operatelog.core.enums.OperateTypeEnum.E
 @RestController
 @RequestMapping("/zhh/cost-class-record")
 @Validated
+@Slf4j
 public class CostClassRecordController {
 
     @Resource
@@ -37,7 +40,13 @@ public class CostClassRecordController {
     @PostMapping("/create")
     @ApiOperation("创建消课记录")
     @PreAuthorize("@ss.hasPermission('zhh:cost-class-record:create')")    public CommonResult<Integer> createCostClassRecord(@Valid @RequestBody CostClassRecordCreateReqVO createReqVO) {
-        return success(costClassRecordService.createCostClassRecord(createReqVO));
+        try {
+            Integer costClassRecord = costClassRecordService.createCostClassRecord(createReqVO);
+            return success(costClassRecord);
+        } catch (Exception e) {
+            log.error("创建消课记录-error", e);
+            return error(400, e.getMessage());
+        }
     }
 
     @PutMapping("/update")

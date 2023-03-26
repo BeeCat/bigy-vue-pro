@@ -57,13 +57,13 @@ public class StudentDO extends BaseDO {
      */
     private String motherName;
     /**
-     * 爸爸手机号
+     * 家长手机号1
      */
-    private Integer fatherMobile;
+    private String fatherMobile;
     /**
-     * 妈妈手机号
+     * 家长手机号2
      */
-    private Integer motherMobile;
+    private String motherMobile;
     /**
      * 性别
      *

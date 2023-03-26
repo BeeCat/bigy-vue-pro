@@ -1,15 +1,21 @@
 package cn.iocoder.yudao.module.system.service.costClassRecord;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
 import cn.iocoder.yudao.module.system.controller.admin.costClassRecord.vo.CostClassRecordCreateReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.costClassRecord.vo.CostClassRecordExportReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.costClassRecord.vo.CostClassRecordPageReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.costClassRecord.vo.CostClassRecordUpdateReqVO;
+import cn.iocoder.yudao.module.system.controller.admin.courseClass.vo.CourseClassExportReqVO;
 import cn.iocoder.yudao.module.system.convert.costClassRecord.CostClassRecordConvert;
 import cn.iocoder.yudao.module.system.dal.dataobject.costClassRecord.CostClassRecordDO;
 import cn.iocoder.yudao.module.system.dal.dataobject.courseClass.CourseClassDO;
+import cn.iocoder.yudao.module.system.dal.dataobject.user.AdminUserDO;
 import cn.iocoder.yudao.module.system.dal.mysql.costClassRecord.CostClassRecordMapper;
 import cn.iocoder.yudao.module.system.service.courseClass.CourseClassService;
+import cn.iocoder.yudao.module.system.service.user.AdminUserService;
+import com.google.common.base.Preconditions;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -36,16 +42,37 @@ public class CostClassRecordServiceImpl implements CostClassRecordService {
     @Resource
     private CourseClassService courseClassService;
 
+    /**
+     *
+     */
+    @Resource
+    private AdminUserService adminUserService;
+
+
     @Override
     public Integer createCostClassRecord(CostClassRecordCreateReqVO createReqVO) {
+
+        String courseRecordCode = createReqVO.getCourseRecordCode();
+        String studentCode = createReqVO.getStudentCode();
+        CostClassRecordPageReqVO reqVO = new CostClassRecordPageReqVO();
+        reqVO.setCourseRecordCode(courseRecordCode);
+        reqVO.setStudentCode(studentCode);
+        PageResult<CostClassRecordDO> costClassRecordPage = getCostClassRecordPage(reqVO);
+        Preconditions.checkArgument(CollectionUtil.isEmpty(costClassRecordPage.getList()), "请勿重复考勤");
+
         // 插入
         CostClassRecordDO costClassRecord = CostClassRecordConvert.INSTANCE.convert(createReqVO);
-        Integer classCode = costClassRecord.getClassCode();
-        CourseClassDO courseClass = courseClassService.getCourseClass(classCode);
+        String classCode = costClassRecord.getClassCode();
+        CourseClassExportReqVO vo = new CourseClassExportReqVO();
+        vo.setClassCode(classCode);
+        List<CourseClassDO> courseClassList = courseClassService.getCourseClassList(vo);
+        CourseClassDO courseClass = courseClassList.get(0);
         String teacherCode = courseClass.getTeacherCode();
+        AdminUserDO user = adminUserService.getUser(Long.parseLong(teacherCode));
 
         costClassRecord.setCostClassType(createReqVO.getCostClassType());
         costClassRecord.setCostTeacherCode(teacherCode);
+        costClassRecord.setCostTeacherName(user.getNickname());
         costClassRecord.setCostTime(new Date());
         costClassRecordMapper.insert(costClassRecord);
         // 返回
