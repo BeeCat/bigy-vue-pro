@@ -4,6 +4,7 @@ import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.framework.operatelog.core.annotations.OperateLog;
+import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.system.controller.admin.courseClass.vo.*;
 import cn.iocoder.yudao.module.system.convert.courseClass.CourseClassConvert;
 import cn.iocoder.yudao.module.system.dal.dataobject.courseClass.CourseClassDO;
@@ -21,6 +22,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 import static cn.iocoder.yudao.framework.operatelog.core.enums.OperateTypeEnum.EXPORT;
@@ -76,6 +78,12 @@ public class CourseClassController {
     @ApiOperation("获得课程班级分页")
     @PreAuthorize("@ss.hasPermission('education:course-class:query')")
     public CommonResult<PageResult<CourseClassRespVO>> getCourseClassPage(@Valid CourseClassPageReqVO pageVO) {
+        Long loginUserId = SecurityFrameworkUtils.getLoginUserId();
+        Set<Long> loginUserRoleIds = SecurityFrameworkUtils.getLoginUserRoleIds();
+        boolean adminFlag = loginUserRoleIds.contains(1L) || loginUserRoleIds.contains(108L);
+        if (!adminFlag) {
+            pageVO.setTeacherCode(loginUserId.toString());
+        }
         PageResult<CourseClassRespVO> pageResult = courseClassService.getCourseClassPage(pageVO);
         return success(pageResult);
     }

@@ -16,11 +16,11 @@
         <el-date-picker v-model="dateRangeOfferDate" size="small" style="width: 240px" value-format="yyyy-MM-dd"
                         type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" />
       </el-form-item>
-      <el-form-item label="爸爸姓名" prop="fatherName">
-        <el-input v-model="queryParams.fatherName" placeholder="请输入爸爸姓名" clearable size="small" @keyup.enter.native="handleQuery"/>
-      </el-form-item>
-      <el-form-item label="妈妈姓名" prop="motherName">
-        <el-input v-model="queryParams.motherName" placeholder="请输入妈妈姓名" clearable size="small" @keyup.enter.native="handleQuery"/>
+      <el-form-item label="阶段" prop="stageType">
+        <el-select v-model="queryParams.stageType" placeholder="请选择性别" clearable size="small">
+            <el-option value="试听">试听</el-option>
+            <el-option value="正式">正式</el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="性别" prop="sex">
         <el-select v-model="queryParams.sex" placeholder="请选择性别" clearable size="small">
@@ -34,7 +34,6 @@
       </el-form-item>
     </el-form>
 
-    <!-- 操作工具栏 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
@@ -50,13 +49,9 @@
     <!-- 列表 -->
     <el-table v-loading="loading" :data="list">
       <el-table-column label="姓名" align="center" prop="name" />
-      <el-table-column label="性别" align="center" prop="sex">
-        <template slot-scope="scope">
-          <span>{{ getDictDataLabel(DICT_TYPE.SYSTEM_USER_SEX, scope.row.sex) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="年龄" align="center" prop="age" />
       <el-table-column label="小名" align="center" prop="title" />
+      <el-table-column label="年龄" align="center" prop="age" />
+      <el-table-column label="阶段" align="center" prop="stageType" />
       <el-table-column label="生日" align="center" prop="birthDay" width="100">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.birthDay, '{y}-{m}-{d}') }}</span>
@@ -68,14 +63,18 @@
           <span>{{ parseTime(scope.row.offerDate, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="爸爸姓名" align="center" prop="fatherName" />
-      <el-table-column label="妈妈姓名" align="center" prop="motherName" />
-      <el-table-column label="手机1" align="center" prop="fatherMobile" width="120" />
-      <el-table-column label="手机2" align="center" prop="motherMobile" width="120" />
+      <!--
+        <el-table-column label="爸爸姓名" align="center" prop="fatherName" />
+        <el-table-column label="妈妈姓名" align="center" prop="motherName" />
+        <el-table-column label="手机1" align="center" prop="fatherMobile" width="120" />
+        <el-table-column label="手机2" align="center" prop="motherMobile" width="120" />
+      -->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
                      v-hasPermi="['student::update']">修改</el-button>
+          <el-button size="mini" type="text" icon="el-icon-edit" @click="handleCostCourse(scope.row)"
+                     v-hasPermi="['student::update']">手动消课</el-button>
           <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)"
                      v-hasPermi="['student::delete']">删除</el-button>
         </template>
@@ -106,6 +105,12 @@
         <el-form-item label="生日" prop="birthDay">
           <el-date-picker clearable v-model="form.birthDay" type="date" @change="birthChange()" value-format="yyyy-MM-dd" placeholder="选择生日" />
         </el-form-item>
+        <el-form-item label="阶段" prop="stageType">
+          <el-radio-group v-model="form.stageType">
+            <el-radio label="试听">试听</el-radio>
+            <el-radio label="正式">正式</el-radio>
+          </el-radio-group>
+        </el-form-item>
         <el-form-item label="地址" prop="address">
           <el-input v-model="form.address" placeholder="请输入地址" />
         </el-form-item>
@@ -130,11 +135,51 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!-- 对话框(添加 / 修改) -->
+    <el-dialog :title="title" :visible.sync="costCourseOpen" width="500px" append-to-body>
+      <el-form ref="costCourseForm" :model="costCourseForm" :rules="rules" label-width="80px">
+        <el-form-item label="姓名" prop="name">
+          <el-input v-model="costCourseForm.name" disabled placeholder="请输入姓名" />
+        </el-form-item>
+        <el-form-item label="小名" prop="title">
+          <el-input v-model="costCourseForm.title" disabled placeholder="请输入小名" />
+        </el-form-item>
+        <el-form-item label="消课老师" prop="costClassTeacher">
+           <el-select v-model="costCourseForm.costClassTeacher" @change="inviteTeacherChange()" filterable placeholder="请选择邀约老师">
+             <el-option v-for="item in teacherList" :key="item.id" :label="item.nickname" :value="item.id">
+             </el-option>
+           </el-select>
+        </el-form-item>
+        <el-form-item label="消课日期" prop="costCourseDate">
+           <el-date-picker clearable v-model="costCourseForm.costCourseDate" type="date" value-format="yyyy-MM-dd" placeholder="请选择消课日期" />
+        </el-form-item>
+        <el-form-item label="消课班级" prop="costCourseClass">
+           <el-select v-model="costCourseForm.costCourseClass" @change="getCourseContentList" placeholder="请选消课班级">
+               <el-option v-for="item in courseClassList" :key="item.id" :label="item.name" :value="item.id"/>
+            </el-select>
+        </el-form-item>
+        <el-form-item label="课程内容" prop="costCourseContent">
+          <el-select v-model="costCourseForm.costCourseContent" placeholder="请选课程内容">
+             <el-option v-for="item in courseContentList" :key="item.id" :label="item.courseSubject" :value="item.id"/>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitCostCourseForm">确 定</el-button>
+        <el-button @click="costCourseCancel">取 消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { create, update, deleteStu, get, getPage, exportExcel } from "@/api/student/student";
+import {  handCostClassRecord, getCostClassRecordPage } from "@/api/education/costClassRecord";
+import { getCourseClassPage } from "@/api/education/courseClass";
+import { getCoursePage } from "@/api/education/course";
+import {  getCourseContentPage } from "@/api/education/courseContent";
+import { listPostUsers } from "@/api/system/user";
 
 export default {
   name: "",
@@ -150,10 +195,16 @@ export default {
       total: 0,
       // 学员管理列表
       list: [],
+      teacherList: [],
+      courseList: [],
+      courseContentList: [],
+      courseClassList: [],
+      courseClassMap: {},
       // 弹出层标题
       title: "",
       // 是否显示弹出层
       open: false,
+      costCourseOpen: false,
       dateRangeOfferDate: [],
       // 查询参数
       queryParams: {
@@ -173,6 +224,7 @@ export default {
       },
       // 表单参数
       form: {},
+      costCourseForm: {},
       // 表单校验
       rules: {
       }
@@ -180,6 +232,9 @@ export default {
   },
   created() {
     this.getList();
+    listPostUsers(8).then(response => {
+      this.teacherList = response.data;
+    })
   },
   methods: {
     /** 查询列表 */
@@ -195,10 +250,50 @@ export default {
         this.loading = false;
       });
     },
+    getCourseContentList() {
+      var courseClass = this.courseClassMap[this.costCourseForm.costCourseClass]
+      getCourseContentPage({courseCode: courseClass.courseCode, pageSize:100}).then(response => {
+        this.courseContentList = response.data.list;
+      })
+    },
     /** 取消按钮 */
     cancel() {
       this.open = false;
       this.reset();
+    },
+    /** 取消按钮 */
+    costCourseCancel() {
+      this.costCourseOpen = false;
+      this.costCourseReset();
+    },
+    /** 表单重置 */
+    costCourseReset() {
+    this.courseClassList = []
+      this.costCourseForm = {
+        id: undefined,
+        name: undefined,
+        age: undefined,
+        title: undefined,
+        birthDay: undefined,
+        address: undefined,
+        offerDate: undefined,
+        fatherName: undefined,
+        motherName: undefined,
+        fatherMobile: undefined,
+        motherMobile: undefined,
+        sex: undefined,
+        deleted: undefined,
+      };
+      this.resetForm("costCourseForm");
+    },
+    inviteTeacherChange(row) {
+      getCourseClassPage({teacherCode: this.costCourseForm.costClassTeacher, pageSize:100}).then(response => {
+        this.courseClassList = response.data.list
+
+        for(var index in this.courseClassList ) {
+          this.courseClassMap[this.courseClassList[index].id] = this.courseClassList[index]
+        }
+      })
     },
     /** 表单重置 */
     reset() {
@@ -242,9 +337,21 @@ export default {
       const id = row.id;
       get(id).then(response => {
         this.form = response.data;
+        this.$set(this.form, "birthDay", new Date(this.form.birthDay))
+        this.$set(this.form, "offerDate", new Date(this.form.offerDate))
         this.open = true;
         this.title = "修改学员管理";
       });
+    },
+    /** 修改按钮操作 */
+    handleCostCourse(row) {
+      this.costCourseReset();
+      this.costCourseOpen = true;
+      this.costCourseForm = {
+        name : row.name,
+        title : row.title,
+        studentId : row.id
+      }
     },
     ageChange() {
       var date = new Date();
@@ -275,6 +382,24 @@ export default {
           this.msgSuccess("新增成功");
           this.open = false;
           this.getList();
+        });
+      });
+    },
+    /** 提交按钮 */
+    submitCostCourseForm() {
+      this.$refs["costCourseForm"].validate(valid => {
+        if (!valid) {
+          return;
+        }
+        this.$refs["costCourseForm"].validate(valid => {
+          if (!valid) {
+            return;
+          }
+          // 添加的提交
+          handCostClassRecord(this.costCourseForm).then(response => {
+            this.msgSuccess("新增成功");
+            this.getList();
+          });
         });
       });
     },

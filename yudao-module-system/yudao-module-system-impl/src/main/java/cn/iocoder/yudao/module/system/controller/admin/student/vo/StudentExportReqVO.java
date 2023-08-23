@@ -1,10 +1,11 @@
 package cn.iocoder.yudao.module.system.controller.admin.student.vo;
 
-import lombok.*;
-import java.util.*;
-import io.swagger.annotations.*;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.Date;
 
 import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
 
@@ -16,7 +17,7 @@ public class StudentExportReqVO {
     private String name;
 
     @ApiModelProperty(value = "年龄")
-    private Integer age;
+    private String age;
 
     @ApiModelProperty(value = "小名")
     private String title;
@@ -24,6 +25,15 @@ public class StudentExportReqVO {
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     @ApiModelProperty(value = "生日")
     private Date birthDay;
+
+    @ApiModelProperty(value = "客户id")
+    private Integer customerId;
+
+    /**
+     * 阶段类型: 试听；正式
+     */
+    @ApiModelProperty(value = "阶段类型")
+    private String stageType;
 
     @ApiModelProperty(value = "地址")
     private String address;

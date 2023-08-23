@@ -96,7 +96,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
     @Override
     public String login(AuthLoginReqVO reqVO, String userIp, String userAgent) {
         // 判断验证码是否正确
-        this.verifyCaptcha(reqVO.getUsername(), reqVO.getUuid(), reqVO.getCode());
+//        this.verifyCaptcha(reqVO.getUsername(), reqVO.getUuid(), reqVO.getCode());
 
         // 使用账号密码，进行登录
         LoginUser loginUser = this.login0(reqVO.getUsername(), reqVO.getPassword());
@@ -138,6 +138,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             authentication = authenticationManager.authenticate(new MultiUsernamePasswordAuthenticationToken(
                     username, password, getUserType()));
         } catch (BadCredentialsException badCredentialsException) {
+            badCredentialsException.printStackTrace();
             this.createLoginLog(username, logTypeEnum, LoginResultEnum.BAD_CREDENTIALS);
             throw exception(AUTH_LOGIN_BAD_CREDENTIALS);
         } catch (DisabledException disabledException) {

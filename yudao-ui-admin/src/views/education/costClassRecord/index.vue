@@ -172,9 +172,7 @@ export default {
     this.getList();
     getCoursePage().then(response => {
       this.courseList = response.data.list;
-      for(var index in this.courseList ) {
-        this.courseMap[this.courseList[index].courseCode] = this.courseList[index]
-      }
+
     })
     listPostUsers(8).then(response => {
       this.teacherList = response.data;

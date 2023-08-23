@@ -54,7 +54,7 @@ public class ApiAccessLogCreateReqDTO {
     /**
      * 浏览器 UA
      */
-    @NotNull(message = "User-Agent 不能为空")
+//    @NotNull(message = "User-Agent 不能为空")
     private String userAgent;
 
     /**

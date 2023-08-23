@@ -10,13 +10,15 @@
         <el-input v-model="queryParams.classCode" placeholder="请输入班级编码" clearable size="small" @keyup.enter.native="handleQuery"/>
       </el-form-item>
       <el-form-item label="课程编码" prop="courseCode">
-        <el-input v-model="queryParams.courseCode" placeholder="请输入课程编码" clearable size="small" @keyup.enter.native="handleQuery"/>
-      </el-form-item>
-      <el-form-item label="任课老师" prop="teacherCode">
-        <el-input v-model="queryParams.teacherCode" placeholder="请输入任课老师" clearable size="small" @keyup.enter.native="handleQuery"/>
+        <el-select v-model="queryParams.courseCode" placeholder="请选课程"  clearable style="width: 100%">
+          <el-option v-for="dict in courseList" :key="dict.courseCode" :label="dict.courseName" :value="dict.courseCode"/>
+        </el-select>
       </el-form-item>
       <el-form-item label="课程老师" prop="classRoomCode">
-        <el-input v-model="queryParams.teacherCode" placeholder="请输入课程老师" clearable size="small" @keyup.enter.native="handleQuery"/>
+        <el-select v-model="queryParams.teacherCode" filterable clearable placeholder="请选择邀约老师">
+           <el-option v-for="item in teacherList" :key="item.id" :label="item.nickname" :value="item.id">
+           </el-option>
+         </el-select>
       </el-form-item>
       <el-form-item label="创建时间">
         <el-date-picker v-model="dateRangeCreateTime" size="small" style="width: 240px" value-format="yyyy-MM-dd"
@@ -83,7 +85,7 @@
           <el-input v-model="form.classCode" placeholder="请输入班级编码" />
         </el-form-item>
         <el-form-item label="课程编码" prop="courseCode">
-           <el-select v-model="form.courseCode" placeholder="请选课程" clearable style="width: 100%">
+           <el-select v-model="form.courseCode" placeholder="请选课程" clearable @change="courseChange" style="width: 100%">
               <el-option v-for="dict in courseList" :key="dict.courseCode" :label="dict.courseName" :value="dict.courseCode"/>
             </el-select>
         </el-form-item>
@@ -97,13 +99,13 @@
             <el-option v-for="dict in classRoomList" :key="dict.id" :label="dict.name" :value="dict.id"/>
           </el-select>
         </el-form-item>
-        <el-form-item label="课程周几" prop="classStartTime">
-          <el-select v-model="form.classTimeDicValue" placeholder="请选择课程周几" clearable style="width: 100%" >
+        <el-form-item label="课程周几" prop="classDicValue">
+          <el-select v-model="form.classDicValue" placeholder="请选择课程周几" clearable style="width: 100%" >
             <el-option v-for="dict in classWeekList" :key="dict.value" :label="dict.label" :value="dict.value"/>
           </el-select>
         </el-form-item>
-        <el-form-item label="课程时长" prop="classEndTime">
-           <el-select v-model="form.classDicValue" placeholder="请选择课程时长" clearable style="width: 100%" >
+        <el-form-item label="课程时长" prop="classTimeDicValue">
+           <el-select v-model="form.classTimeDicValue" placeholder="请选择课程时长" clearable style="width: 100%" >
             <el-option v-for="dict in classTimeList" :key="dict.value" :label="dict.label" :value="dict.value"/>
           </el-select>
         </el-form-item>
@@ -141,6 +143,16 @@
 
         <el-row>
           <el-col span="18">
+            <el-form-item label="课程内容" prop="courseContentCode">
+               <el-select v-model="form.courseContentCode" placeholder="请选课程内容">
+                   <el-option v-for="item in courseContentList" :key="item.id" :label="item.courseSubject" :value="item.id"/>
+                </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col span="18">
             <el-form-item label="课次编号" prop="name">
               <el-input v-model="form.courseRecordCode" :disabled="true" placeholder="请输入课程名称" />
             </el-form-item>
@@ -152,6 +164,8 @@
               <el-table-column label="学员编号" align="center" prop="studentCode" />
               <el-table-column label="学员姓名" align="center" prop="studentName" />
               <el-table-column label="学员年龄" align="center" prop="studentAge" />
+              <el-table-column label="剩余课程" align="center" prop="haveClassAmount" />
+              <el-table-column label="消课课程" align="center" prop="costClassAmount" />
               <el-table-column label="学员性别" align="center" prop="studentSex" />
               <el-table-column label="学员地址" align="center" prop="studentAddress" />
               <el-table-column label="创建时间" align="center" prop="createTime" width="180">
@@ -207,30 +221,36 @@
         </el-row>
         <el-row>
           <el-col span="8">
-            <el-form-item label="学员姓名" prop="studentCode">
+            <el-form-item label="学员姓名" prop="name">
                <el-input :disabled="true" v-model="selectedStudent.name" />
             </el-form-item>
           </el-col>
 
           <el-col span="8">
-            <el-form-item label="学员年龄" prop="studentCode">
+            <el-form-item label="学员年龄" prop="age">
                <el-input :disabled="true" v-model="selectedStudent.age" />
             </el-form-item>
           </el-col>
 
           <el-col span="8">
-            <el-form-item label="学员性别" prop="studentCode">
+            <el-form-item label="学员性别" prop="sex">
                <el-input :disabled="true" v-model="selectedStudent.sex" />
             </el-form-item>
           </el-col>
 
         </el-row>
         <el-row>
-          <el-col span="24">
+          <el-col span="16">
             <el-form-item label="学员地址" prop="studentCode">
               <el-input v-model="selectedStudent.address"  :disabled="true" />
             </el-form-item>
           </el-col>
+          <el-col span="8">
+            <el-form-item label="学员阶段" prop="studentCode">
+               <el-input :disabled="true" v-model="selectedStudent.stageType" />
+            </el-form-item>
+          </el-col>
+
         </el-row>
         <el-row>
           <!-- 列表 -->
@@ -239,6 +259,7 @@
               <el-table-column label="学员姓名" align="center" prop="studentName" />
               <el-table-column label="学员年龄" align="center" prop="studentAge" />
               <el-table-column label="学员性别" align="center" prop="studentSex" />
+              <el-table-column label="学员阶段" align="center" prop="stageType" />
               <el-table-column label="学员地址" align="center" prop="studentAddress" />
               <el-table-column label="创建时间" align="center" prop="createTime" width="180">
                 <template slot-scope="scope">
@@ -274,9 +295,10 @@ import { getClassRoomPage } from "@/api/assets/classRoom";
 import { listPostUsers } from "@/api/system/user";
 import { getCoursePage } from "@/api/education/course";
 import { createCourseClass, updateCourseClass, deleteCourseClass, getCourseClass, getCourseClassPage, exportCourseClassExcel } from "@/api/education/courseClass";
-import { createClassStudent, updateClassStudent, deleteClassStudent, getClassStudent, getClassStudentPage, exportClassStudentExcel } from "@/api/education/classStudent";
+import { createClassStudent, updateClassStudent, deleteClassStudent, getClassStudent, getClassStudentPage, getClassStudentAccountPage, exportClassStudentExcel } from "@/api/education/classStudent";
 import { createCostClassRecord, updateCostClassRecord, deleteCostClassRecord, getCostClassRecord, getCostClassRecordPage, exportCostClassRecordExcel } from "@/api/education/costClassRecord";
 import { get, getPage } from "@/api/student/student";
+import {  getCourseContentPage } from "@/api/education/courseContent";
 
 
 export default {
@@ -294,6 +316,7 @@ export default {
       // 课程班级列表
       list: [],
       studentList: [],
+      courseContentList: [],
       selectedStudent: {},
       classStudentList: [],
       // 弹出层标题
@@ -363,6 +386,7 @@ export default {
       // 执行查询
       getCourseClassPage(params).then(response => {
         this.list = response.data.list;
+
         this.total = response.data.total;
         this.loading = false;
       });
@@ -370,6 +394,8 @@ export default {
     courseChange() {
       if (this.courseMap[this.form.courseCode].courseTime === "120") {
         this.classTimeList = getDictDatas(DICT_TYPE.ASSIGN_CLASS_TIME_120)
+      } else if (this.courseMap[this.form.courseCode].courseTime === "60") {
+         this.classTimeList = getDictDatas(DICT_TYPE.ASSIGN_CLASS_TIME_60)
       } else {
         this.classTimeList = getDictDatas(DICT_TYPE.ASSIGN_CLASS_TIME_90)
       }
@@ -383,6 +409,8 @@ export default {
       }
       if (this.courseMap[row.courseCode].courseTime === "120") {
         return getDictDataLabel(DICT_TYPE.ASSIGN_CLASS_TIME_120, row.classTimeDicValue)
+      } else if (this.courseMap[row.courseCode].courseTime === "60") {
+         this.classTimeList = getDictDatas(DICT_TYPE.ASSIGN_CLASS_TIME_60)
       } else {
         return getDictDataLabel(DICT_TYPE.ASSIGN_CLASS_TIME_90, row.classTimeDicValue)
       }
@@ -462,11 +490,16 @@ export default {
       this.reset();
       const id = row.id;
       this.openClassing = true;
+      this.title = "上课考勤";
       this.form = row;
       var date = new Date();
-      this.form.courseRecordCode = date.getFullYear() +''+ (date.getMonth() + 1) + date.getDate() + '-' + date.getDay() + '-' + row.teacherCode + '-' + row.classDicValue + '-' + row.classTimeDicValue
+      this.form.courseRecordCode = date.getFullYear() +''+ (date.getMonth() + 1) + date.getDate() + '-' + (date.getDay() + 1) + '-' + row.teacherCode + '-' + row.classDicValue + '-' + row.classTimeDicValue
       this.getStudent();
       this.getClassStudent();
+
+      getCourseContentPage({courseCode: row.courseCode, pageSize:100}).then(response => {
+        this.courseContentList = response.data.list;
+      })
     },
     /** 提交按钮 */
     submitForm() {
@@ -498,6 +531,7 @@ export default {
         studentName: row.studentName,
         classCode: form.classCode,
         courseCode: form.courseCode,
+        courseContentCode: form.courseContentCode,
         courseRecordCode: form.courseRecordCode,
         costClassType: 1
       }).then(response => {
@@ -509,6 +543,7 @@ export default {
       createCostClassRecord({
         studentCode: row.studentCode,
         studentName: row.studentName,
+        courseContentCode: form.courseContentCode,
         classCode: form.classCode,
         courseCode: form.courseCode,
         courseRecordCode: form.courseRecordCode,
@@ -524,7 +559,7 @@ export default {
     },
     getClassStudent() {
       this.classStudentParam = {classCode: this.form.id}
-      getClassStudentPage(this.classStudentParam).then(response => {
+      getClassStudentAccountPage(this.classStudentParam).then(response => {
         this.classStudentList = response.data.list
       })
     },
@@ -535,6 +570,8 @@ export default {
       })
     },
     getStudent() {
+      this.studentParam.pageSize=10000
+      this.studentParam.stageType = '正式'
       getPage(this.studentParam).then(response => {
         this.studentList = response.data.list
       })

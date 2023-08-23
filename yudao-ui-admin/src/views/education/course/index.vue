@@ -260,7 +260,12 @@ export default {
       getDicts('assign_class_time_90').then(response => {
         this.timeDicDataList = response.data;
       });
-    } else {
+    } else if (courseTimeType === '60') {
+       // 排课时间1h
+       getDicts('assign_class_time_60').then(response => {
+         this.timeDicDataList = response.data;
+       });
+     } else {
       // 排课时间2h
       getDicts('assign_class_time_120').then(response => {
         this.timeDicDataList = response.data;

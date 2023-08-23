@@ -1,10 +1,12 @@
 package cn.iocoder.yudao.module.system.dal.dataobject.costClassRecord;
 
+import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
-import java.util.*;
-import com.baomidou.mybatisplus.annotation.*;
-import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
+
+import java.util.Date;
 
 /**
  * 消课记录 DO
@@ -33,6 +35,10 @@ public class CostClassRecordDO extends BaseDO {
      * 学生id
      */
     private String studentCode;
+    /**
+     * 是否手动
+     */
+    private int handFlag;
     /**
      * 学生id
      */

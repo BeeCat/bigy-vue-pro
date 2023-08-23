@@ -42,6 +42,14 @@ export function getClassStudentPage(query) {
     params: query
   })
 }
+// 获得班级学生分页
+export function getClassStudentAccountPage(query) {
+  return request({
+    url: '/zhh/class-student/pageWithAccount',
+    method: 'get',
+    params: query
+  })
+}
 
 // 导出班级学生 Excel
 export function exportClassStudentExcel(query) {

@@ -1,0 +1,298 @@
+<template>
+  <div class="app-container">
+
+    <!-- 搜索工作栏 -->
+    <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
+      <el-form-item label="客户id" prop="customerId">
+        <el-input v-model="queryParams.customerId" placeholder="请输入客户id" clearable size="small" @keyup.enter.native="handleQuery"/>
+      </el-form-item>
+      <el-form-item label="跟踪老师" prop="trackTeacher">
+        <el-input v-model="queryParams.trackTeacher" placeholder="请输入跟踪老师" clearable size="small" @keyup.enter.native="handleQuery"/>
+      </el-form-item>
+      <el-form-item label="跟踪结果" prop="trackResult">
+        <el-input v-model="queryParams.trackResult" placeholder="请输入跟踪结果" clearable size="small" @keyup.enter.native="handleQuery"/>
+      </el-form-item>
+      <el-form-item label="沟通前等级" prop="beforeCustomerGrade">
+        <el-input v-model="queryParams.beforeCustomerGrade" placeholder="请输入沟通前等级" clearable size="small" @keyup.enter.native="handleQuery"/>
+      </el-form-item>
+      <el-form-item label="沟通后等级" prop="afterCustomerGrade">
+        <el-input v-model="queryParams.afterCustomerGrade" placeholder="请输入沟通后等级" clearable size="small" @keyup.enter.native="handleQuery"/>
+      </el-form-item>
+      <el-form-item label="沟通经验心得" prop="trackExperience">
+        <el-input v-model="queryParams.trackExperience" placeholder="请输入沟通经验心得" clearable size="small" @keyup.enter.native="handleQuery"/>
+      </el-form-item>
+      <el-form-item label="等级是否变化" prop="gradeChangeFlag">
+        <el-input v-model="queryParams.gradeChangeFlag" placeholder="请输入等级是否变化" clearable size="small" @keyup.enter.native="handleQuery"/>
+      </el-form-item>
+      <el-form-item label="是否邀约成功" prop="inviteFlag">
+        <el-input v-model="queryParams.inviteFlag" placeholder="请输入是否邀约成功" clearable size="small" @keyup.enter.native="handleQuery"/>
+      </el-form-item>
+      <el-form-item label="是否成单" prop="orderFlag">
+        <el-input v-model="queryParams.orderFlag" placeholder="请输入是否成单" clearable size="small" @keyup.enter.native="handleQuery"/>
+      </el-form-item>
+      <el-form-item label="创建时间">
+        <el-date-picker v-model="dateRangeCreateTime" size="small" style="width: 240px" value-format="yyyy-MM-dd"
+                        type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" />
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+      </el-form-item>
+    </el-form>
+
+    <!-- 操作工具栏 -->
+    <el-row :gutter="10" class="mb8">
+      <el-col :span="1.5">
+        <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
+                   v-hasPermi="['zhh:customer-track:create']">新增</el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport"
+                   v-hasPermi="['zhh:customer-track:export']">导出</el-button>
+      </el-col>
+      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+    </el-row>
+
+    <!-- 列表 -->
+    <el-table v-loading="loading" :data="list">
+      <el-table-column label="" align="center" prop="id" />
+      <el-table-column label="客户id" align="center" prop="customerId" />
+      <el-table-column label="跟踪老师" align="center" prop="trackTeacher" />
+      <el-table-column label="跟踪内容" align="center" prop="trackContent" />
+      <el-table-column label="跟踪结果" align="center" prop="trackResult" />
+      <el-table-column label="沟通前等级" align="center" prop="beforeCustomerGrade" />
+      <el-table-column label="沟通后等级" align="center" prop="afterCustomerGrade" />
+      <el-table-column label="沟通经验心得" align="center" prop="trackExperience" />
+      <el-table-column label="等级是否变化" align="center" prop="gradeChangeFlag" />
+      <el-table-column label="是否邀约成功" align="center" prop="inviteFlag" />
+      <el-table-column label="是否成单" align="center" prop="orderFlag" />
+      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.createTime) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+        <template slot-scope="scope">
+          <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
+                     v-hasPermi="['zhh:customer-track:update']">修改</el-button>
+          <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)"
+                     v-hasPermi="['zhh:customer-track:delete']">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <!-- 分页组件 -->
+    <pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNo" :limit.sync="queryParams.pageSize"
+                @pagination="getList"/>
+
+    <!-- 对话框(添加 / 修改) -->
+    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="客户id" prop="customerId">
+          <el-input v-model="form.customerId" placeholder="请输入客户id" />
+        </el-form-item>
+        <el-form-item label="跟踪老师" prop="trackTeacher">
+          <el-input v-model="form.trackTeacher" placeholder="请输入跟踪老师" />
+        </el-form-item>
+        <el-form-item label="跟踪内容">
+          <editor v-model="form.trackContent" :min-height="192"/>
+        </el-form-item>
+        <el-form-item label="跟踪结果" prop="trackResult">
+          <el-input v-model="form.trackResult" placeholder="请输入跟踪结果" />
+        </el-form-item>
+        <el-form-item label="沟通前等级" prop="beforeCustomerGrade">
+          <el-input v-model="form.beforeCustomerGrade" placeholder="请输入沟通前等级" />
+        </el-form-item>
+        <el-form-item label="沟通后等级" prop="afterCustomerGrade">
+          <el-input v-model="form.afterCustomerGrade" placeholder="请输入沟通后等级" />
+        </el-form-item>
+        <el-form-item label="沟通经验心得" prop="trackExperience">
+          <el-input v-model="form.trackExperience" placeholder="请输入沟通经验心得" />
+        </el-form-item>
+        <el-form-item label="等级是否变化" prop="gradeChangeFlag">
+          <el-input v-model="form.gradeChangeFlag" placeholder="请输入等级是否变化" />
+        </el-form-item>
+        <el-form-item label="是否邀约成功" prop="inviteFlag">
+          <el-input v-model="form.inviteFlag" placeholder="请输入是否邀约成功" />
+        </el-form-item>
+        <el-form-item label="是否成单" prop="orderFlag">
+          <el-input v-model="form.orderFlag" placeholder="请输入是否成单" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+import { createCustomerTrack, updateCustomerTrack, deleteCustomerTrack, getCustomerTrack, getCustomerTrackPage, exportCustomerTrackExcel } from "@/api/sale/customerTrack";
+import Editor from '@/components/Editor';
+
+export default {
+  name: "CustomerTrack",
+  components: {
+    Editor,
+  },
+  data() {
+    return {
+      // 遮罩层
+      loading: true,
+      // 显示搜索条件
+      showSearch: true,
+      // 总条数
+      total: 0,
+      // 列表
+      list: [],
+      // 弹出层标题
+      title: "",
+      // 是否显示弹出层
+      open: false,
+      dateRangeCreateTime: [],
+      // 查询参数
+      queryParams: {
+        pageNo: 1,
+        pageSize: 10,
+        customerId: null,
+        trackTeacher: null,
+        trackContent: null,
+        trackResult: null,
+        beforeCustomerGrade: null,
+        afterCustomerGrade: null,
+        trackExperience: null,
+        gradeChangeFlag: null,
+        inviteFlag: null,
+        orderFlag: null,
+      },
+      // 表单参数
+      form: {},
+      // 表单校验
+      rules: {
+      }
+    };
+  },
+  created() {
+    this.getList();
+  },
+  methods: {
+    /** 查询列表 */
+    getList() {
+      this.loading = true;
+      // 处理查询参数
+      let params = {...this.queryParams};
+      this.addBeginAndEndTime(params, this.dateRangeCreateTime, 'createTime');
+      // 执行查询
+      getCustomerTrackPage(params).then(response => {
+        this.list = response.data.list;
+        this.total = response.data.total;
+        this.loading = false;
+      });
+    },
+    /** 取消按钮 */
+    cancel() {
+      this.open = false;
+      this.reset();
+    },
+    /** 表单重置 */
+    reset() {
+      this.form = {
+        id: undefined,
+        customerId: undefined,
+        trackTeacher: undefined,
+        trackContent: undefined,
+        trackResult: undefined,
+        beforeCustomerGrade: undefined,
+        afterCustomerGrade: undefined,
+        trackExperience: undefined,
+        gradeChangeFlag: undefined,
+        inviteFlag: undefined,
+        orderFlag: undefined,
+      };
+      this.resetForm("form");
+    },
+    /** 搜索按钮操作 */
+    handleQuery() {
+      this.queryParams.pageNo = 1;
+      this.getList();
+    },
+    /** 重置按钮操作 */
+    resetQuery() {
+      this.dateRangeCreateTime = [];
+      this.resetForm("queryForm");
+      this.handleQuery();
+    },
+    /** 新增按钮操作 */
+    handleAdd() {
+      this.reset();
+      this.open = true;
+      this.title = "添加";
+    },
+    /** 修改按钮操作 */
+    handleUpdate(row) {
+      this.reset();
+      const id = row.id;
+      getCustomerTrack(id).then(response => {
+        this.form = response.data;
+        this.open = true;
+        this.title = "修改";
+      });
+    },
+    /** 提交按钮 */
+    submitForm() {
+      this.$refs["form"].validate(valid => {
+        if (!valid) {
+          return;
+        }
+        // 修改的提交
+        if (this.form.id != null) {
+          updateCustomerTrack(this.form).then(response => {
+            this.msgSuccess("修改成功");
+            this.open = false;
+            this.getList();
+          });
+          return;
+        }
+        // 添加的提交
+        createCustomerTrack(this.form).then(response => {
+          this.msgSuccess("新增成功");
+          this.open = false;
+          this.getList();
+        });
+      });
+    },
+    /** 删除按钮操作 */
+    handleDelete(row) {
+      const id = row.id;
+      this.$confirm('是否确认删除编号为"' + id + '"的数据项?', "警告", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }).then(function() {
+          return deleteCustomerTrack(id);
+        }).then(() => {
+          this.getList();
+          this.msgSuccess("删除成功");
+        })
+    },
+    /** 导出按钮操作 */
+    handleExport() {
+      // 处理查询参数
+      let params = {...this.queryParams};
+      params.pageNo = undefined;
+      params.pageSize = undefined;
+      this.addBeginAndEndTime(params, this.dateRangeCreateTime, 'createTime');
+      // 执行导出
+      this.$confirm('是否确认导出所有数据项?', "警告", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }).then(function() {
+          return exportCustomerTrackExcel(params);
+        }).then(response => {
+          this.downloadExcel(response, '.xls');
+        })
+    }
+  }
+};
+</script>

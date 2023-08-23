@@ -55,7 +55,7 @@ public class LoginLogCreateReqDTO {
     /**
      * 浏览器 UserAgent
      */
-    @NotEmpty(message = "浏览器 UserAgent 不能为空")
+//    @NotEmpty(message = "浏览器 UserAgent 不能为空")
     private String userAgent;
 
 }

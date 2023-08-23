@@ -22,6 +22,8 @@ public interface ClassStudentMapper extends BaseMapperX<ClassStudentDO> {
         return selectPage(reqVO, new LambdaQueryWrapperX<ClassStudentDO>()
                 .likeIfPresent(ClassStudentDO::getName, reqVO.getName())
                 .eqIfPresent(ClassStudentDO::getClassCode, reqVO.getClassCode())
+                .eqIfPresent(ClassStudentDO::getStageType, reqVO.getStageType())
+                .eqIfPresent(ClassStudentDO::getValidateTime, reqVO.getValidateTime())
                 .eqIfPresent(ClassStudentDO::getCourseCode, reqVO.getCourseCode())
                 .eqIfPresent(ClassStudentDO::getStudentCode, reqVO.getStudentCode())
                 .likeIfPresent(ClassStudentDO::getStudentName, reqVO.getStudentName())
@@ -32,6 +34,8 @@ public interface ClassStudentMapper extends BaseMapperX<ClassStudentDO> {
     default List<ClassStudentDO> selectList(ClassStudentExportReqVO reqVO) {
         return selectList(new LambdaQueryWrapperX<ClassStudentDO>()
                 .likeIfPresent(ClassStudentDO::getName, reqVO.getName())
+                .eqIfPresent(ClassStudentDO::getStageType, reqVO.getStageType())
+                .eqIfPresent(ClassStudentDO::getValidateTime, reqVO.getValidateTime())
                 .eqIfPresent(ClassStudentDO::getClassCode, reqVO.getClassCode())
                 .eqIfPresent(ClassStudentDO::getCourseCode, reqVO.getCourseCode())
                 .eqIfPresent(ClassStudentDO::getStudentCode, reqVO.getStudentCode())

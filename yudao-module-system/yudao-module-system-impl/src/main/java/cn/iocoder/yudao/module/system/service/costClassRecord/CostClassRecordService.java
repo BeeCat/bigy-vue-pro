@@ -1,10 +1,7 @@
 package cn.iocoder.yudao.module.system.service.costClassRecord;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.module.system.controller.admin.costClassRecord.vo.CostClassRecordCreateReqVO;
-import cn.iocoder.yudao.module.system.controller.admin.costClassRecord.vo.CostClassRecordExportReqVO;
-import cn.iocoder.yudao.module.system.controller.admin.costClassRecord.vo.CostClassRecordPageReqVO;
-import cn.iocoder.yudao.module.system.controller.admin.costClassRecord.vo.CostClassRecordUpdateReqVO;
+import cn.iocoder.yudao.module.system.controller.admin.costClassRecord.vo.*;
 import cn.iocoder.yudao.module.system.dal.dataobject.costClassRecord.CostClassRecordDO;
 
 import javax.validation.Valid;
@@ -72,4 +69,5 @@ public interface CostClassRecordService {
      */
     List<CostClassRecordDO> getCostClassRecordList(CostClassRecordExportReqVO exportReqVO);
 
+    Integer handCostClass(CostClassHandCreateReqVO createReqVO);
 }

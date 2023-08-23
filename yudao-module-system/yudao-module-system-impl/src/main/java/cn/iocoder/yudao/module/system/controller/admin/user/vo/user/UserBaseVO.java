@@ -26,7 +26,7 @@ public class UserBaseVO {
     private String nickname;
 
     @ApiModelProperty(value = "备注", example = "我是一个用户")
-    private String remark;
+            private String remark;
 
     @ApiModelProperty(value = "部门ID", example = "我是一个用户")
     private Long deptId;

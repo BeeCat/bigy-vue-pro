@@ -1,9 +1,11 @@
 package cn.iocoder.yudao.module.system.dal.dataobject.classStudent;
 
-import lombok.*;
-import java.util.*;
-import com.baomidou.mybatisplus.annotation.*;
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.*;
+
+import java.util.Date;
 
 /**
  * 班级学生 DO
@@ -44,5 +46,17 @@ public class ClassStudentDO extends BaseDO {
      * 班级姓名
      */
     private String studentName;
+
+    /**
+     * 阶段类型
+     */
+    private String stageType;
+
+    /**
+     * 失效日期
+     */
+    private Date validateTime;
+
+
 
 }

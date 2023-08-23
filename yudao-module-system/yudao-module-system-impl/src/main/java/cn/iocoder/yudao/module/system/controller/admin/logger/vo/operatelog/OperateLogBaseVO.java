@@ -54,7 +54,7 @@ public class OperateLogBaseVO {
     private String userIp;
 
     @ApiModelProperty(value = "浏览器 UserAgent", required = true, example = "Mozilla/5.0")
-    @NotEmpty(message = "浏览器 UserAgent 不能为空")
+//    @NotEmpty(message = "浏览器 UserAgent 不能为空")
     private String userAgent;
 
     @ApiModelProperty(value = "Java 方法名", required = true, example = "cn.iocoder.yudao.adminserver.UserController.save(...)")

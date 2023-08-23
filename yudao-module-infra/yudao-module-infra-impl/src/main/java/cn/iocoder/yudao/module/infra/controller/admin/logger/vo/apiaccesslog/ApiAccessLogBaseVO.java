@@ -48,7 +48,7 @@ public class ApiAccessLogBaseVO {
     private String userIp;
 
     @ApiModelProperty(value = "浏览器 UA", required = true, example = "Mozilla/5.0")
-    @NotNull(message = "浏览器 UA不能为空")
+//    @NotNull(message = "浏览器 UA不能为空")
     private String userAgent;
 
     @ApiModelProperty(value = "开始请求时间", required = true)

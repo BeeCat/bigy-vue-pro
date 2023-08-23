@@ -1,10 +1,9 @@
 package cn.iocoder.yudao.module.system.controller.admin.classStudent.vo;
 
-import lombok.*;
-import java.util.*;
-import io.swagger.annotations.*;
-
 import com.alibaba.excel.annotation.ExcelProperty;
+import lombok.Data;
+
+import java.util.Date;
 
 /**
  * 班级学生 Excel VO
@@ -34,5 +33,17 @@ public class ClassStudentExcelVO {
 
     @ExcelProperty("创建时间")
     private Date createTime;
+
+    /**
+     * 阶段类型
+     */
+    @ExcelProperty(value = "阶段类型")
+    private String stageType;
+
+    /**
+     * 失效日期
+     */
+    @ExcelProperty(value = "失效日期")
+    private Date validateTime;
 
 }

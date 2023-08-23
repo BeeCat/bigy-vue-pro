@@ -77,18 +77,18 @@ export const SystemUserSocialTypeEnum = {
   //   source: "gitee",
   //   img: "https://cdn.jsdelivr.net/gh/justauth/justauth-oauth-logo@1.11/gitee.png",
   // },
-  DINGTALK: {
-    title: "钉钉",
-    type: 20,
-    source: "dingtalk",
-    img: "https://cdn.jsdelivr.net/gh/justauth/justauth-oauth-logo@1.11/dingtalk.png",
-  },
-  WECHAT_ENTERPRISE: {
-    title: "企业微信",
-    type: 30,
-    source: "wechat_enterprise",
-    img: "https://cdn.jsdelivr.net/gh/justauth/justauth-oauth-logo@1.11/wechat_enterprise.png",
-  }
+//  DINGTALK: {
+//    title: "钉钉",
+//    type: 20,
+//    source: "dingtalk",
+//    img: "https://cdn.jsdelivr.net/gh/justauth/justauth-oauth-logo@1.11/dingtalk.png",
+//  },
+//  WECHAT_ENTERPRISE: {
+//    title: "企业微信",
+//    type: 30,
+//    source: "wechat_enterprise",
+//    img: "https://cdn.jsdelivr.net/gh/justauth/justauth-oauth-logo@1.11/wechat_enterprise.png",
+//  }
 }
 
 /**

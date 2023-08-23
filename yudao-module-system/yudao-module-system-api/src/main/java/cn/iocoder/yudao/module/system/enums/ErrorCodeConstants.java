@@ -103,12 +103,21 @@ public interface ErrorCodeConstants {
     ErrorCode SMS_CODE_IS_UNUSED = new ErrorCode(1002013008, "验证码未被使用");
 
     // ========== 租户模块 1002014000 ==========
+    ErrorCode TODOLIST_NOT_EXISTS = new ErrorCode(1002014000, "租户不存在");
+    ErrorCode TODO_LIST_LOG_NOT_EXISTS = new ErrorCode(1002014000, "租户不存在");
     ErrorCode TENANT_NOT_EXISTS = new ErrorCode(1002014000, "租户不存在");
     ErrorCode STUDENT_NOT_EXISTS = new ErrorCode(1002014000, "学员不存在");
+    ErrorCode CUSTOMER_TRACK_NOT_EXISTS = new ErrorCode(1002014000, "客户跟踪不存在");
+    ErrorCode CUSTOMER_NOT_EXISTS = new ErrorCode(1002014000, "客户不存在");
+    ErrorCode ACTIVITY_NOT_EXISTS = new ErrorCode(1002014000, "活动不存在");
+    ErrorCode STUDENT_ACCOUNT_NOT_EXISTS = new ErrorCode(1002014000, "学员账户不存在");
     ErrorCode COST_CLASS_RECORD_NOT_EXISTS = new ErrorCode(1002014000, "学员不存在");
     ErrorCode COURSE_NOT_EXISTS = new ErrorCode(1002014000, "课程不存在");
     ErrorCode CLASS_ROOM_NOT_EXISTS = new ErrorCode(1002014000, "课程不存在");
     ErrorCode COURSE_CLASS_NOT_EXISTS = new ErrorCode(1002014000, "课程不存在");
+    ErrorCode COURSE_CONTENT_NOT_EXISTS = new ErrorCode(1002014000, "课程内容不存在");
+    ErrorCode COURSE_PACKAGE_NOT_EXISTS = new ErrorCode(1002014000, "课程内容不存在");
+    ErrorCode STUDENT_ACCOUNT_RECORD_NOT_EXISTS = new ErrorCode(1002014000, "课程内容不存在");
     ErrorCode CLASS_STUDENT_NOT_EXISTS = new ErrorCode(1002014000, "课程不存在");
 
     // ========== 错误码模块 1002015000 ==========

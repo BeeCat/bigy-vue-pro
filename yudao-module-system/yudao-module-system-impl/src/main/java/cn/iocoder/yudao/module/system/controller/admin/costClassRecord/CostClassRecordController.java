@@ -49,6 +49,18 @@ public class CostClassRecordController {
         }
     }
 
+    @PostMapping("/handCost")
+    @ApiOperation("创建消课记录")
+    @PreAuthorize("@ss.hasPermission('zhh:cost-class-record:handCost')")    public CommonResult<Integer> handCost(@Valid @RequestBody CostClassHandCreateReqVO createReqVO) {
+        try {
+            Integer costClassRecord = costClassRecordService.handCostClass(createReqVO);
+            return success(costClassRecord);
+        } catch (Exception e) {
+            log.error("创建消课记录-error", e);
+            return error(400, e.getMessage());
+        }
+    }
+
     @PutMapping("/update")
     @ApiOperation("更新消课记录")
     @PreAuthorize("@ss.hasPermission('zhh:cost-class-record:update')")    public CommonResult<Boolean> updateCostClassRecord(@Valid @RequestBody CostClassRecordUpdateReqVO updateReqVO) {

@@ -1,13 +1,15 @@
 package cn.iocoder.yudao.module.system.service.student;
 
-import java.util.*;
-import javax.validation.*;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.system.controller.admin.student.vo.StudentCreateReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.student.vo.StudentExportReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.student.vo.StudentPageReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.student.vo.StudentUpdateReqVO;
 import cn.iocoder.yudao.module.system.dal.dataobject.student.StudentDO;
+
+import javax.validation.Valid;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * 学员管理 Service 接口
@@ -70,4 +72,5 @@ public interface StudentService {
      */
     List<StudentDO> getList(StudentExportReqVO exportReqVO);
 
+    StudentDO getByCustomer(Integer customerId);
 }

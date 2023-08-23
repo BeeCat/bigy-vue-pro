@@ -2,7 +2,6 @@ package cn.iocoder.yudao.module.system.service.classStudent;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.system.controller.admin.classStudent.vo.*;
-import cn.iocoder.yudao.module.system.controller.admin.courseClass.vo.CourseClassRespVO;
 import cn.iocoder.yudao.module.system.dal.dataobject.classStudent.ClassStudentDO;
 
 import javax.validation.Valid;
@@ -70,4 +69,5 @@ public interface ClassStudentService {
      */
     List<ClassStudentDO> getClassStudentList(ClassStudentExportReqVO exportReqVO);
 
+    PageResult<ClassStudentRespVO> getClassStudentAccountPage(ClassStudentPageReqVO pageVO);
 }

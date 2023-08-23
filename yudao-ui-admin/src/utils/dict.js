@@ -23,6 +23,11 @@ export const DICT_TYPE = {
   SYSTEM_SMS_SEND_STATUS: 'system_sms_send_status',
   SYSTEM_SMS_RECEIVE_STATUS: 'system_sms_receive_status',
   SYSTEM_ERROR_CODE_TYPE: 'system_error_code_type',
+  CUSTOMER_GRADE_TYPE: 'customer_grade_type',
+  CUSTOMER_VILLAGE: 'customer_village',
+  IMPORT_STAGE_TYPE: 'import_stage_type',
+  PRIORITY_STAGE_TYPE: 'priority_stage_type',
+  TODO_TASK_STATUS: 'todo_task_status',
 
   // ========== INFRA 模块 ==========
   INFRA_REDIS_TIMEOUT_TYPE: 'infra_redis_timeout_type',
@@ -58,6 +63,7 @@ export const DICT_TYPE = {
   ASSIGN_CLASS_WEEK: 'assign_class_week', // 退款订单类别
   ASSIGN_CLASS_TIME_120: 'assign_class_time_120', // 退款订单类别
   ASSIGN_CLASS_TIME_90: 'assign_class_time_90', // 退款订单类别
+  ASSIGN_CLASS_TIME_60: 'assign_class_time_60', // 退款订单类别
 }
 
 /**

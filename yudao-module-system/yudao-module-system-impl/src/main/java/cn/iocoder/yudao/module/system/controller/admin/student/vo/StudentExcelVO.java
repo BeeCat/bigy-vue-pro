@@ -1,12 +1,11 @@
 package cn.iocoder.yudao.module.system.controller.admin.student.vo;
 
-import lombok.*;
-import java.util.*;
-import io.swagger.annotations.*;
-
-import com.alibaba.excel.annotation.ExcelProperty;
 import cn.iocoder.yudao.framework.excel.core.annotations.DictFormat;
 import cn.iocoder.yudao.framework.excel.core.convert.DictConvert;
+import com.alibaba.excel.annotation.ExcelProperty;
+import lombok.Data;
+
+import java.util.Date;
 
 
 /**
@@ -24,13 +23,18 @@ public class StudentExcelVO {
     private String name;
 
     @ExcelProperty("年龄")
-    private Integer age;
+    private String age;
 
     @ExcelProperty("小名")
     private String title;
 
     @ExcelProperty("生日")
     private Date birthDay;
+    /**
+     * 阶段类型: 试听；正式
+     */
+    @ExcelProperty("阶段类型")
+    private String stageType;
 
     @ExcelProperty("地址")
     private String address;

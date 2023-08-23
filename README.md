@@ -1,6 +1,6 @@
 启动过程
 
-    1. 启动redis： 终端 redis-serve
+    1. 启动redis： 终端 redis-server
     2. 启动服务 ide 启动启动类
     3. 启动前端 ide ui模块启动： npm run dev
     4. 访问地址：http://zhihuihou.zhh.com:1024/

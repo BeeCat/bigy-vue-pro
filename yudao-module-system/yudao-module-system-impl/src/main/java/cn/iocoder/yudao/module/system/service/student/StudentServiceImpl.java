@@ -1,5 +1,7 @@
-package cn.iocoder.yudao.module.student.service.student;
+package cn.iocoder.yudao.module.system.service.student;
 
+import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.lang.Assert;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.system.controller.admin.student.vo.StudentCreateReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.student.vo.StudentExportReqVO;
@@ -8,7 +10,7 @@ import cn.iocoder.yudao.module.system.controller.admin.student.vo.StudentUpdateR
 import cn.iocoder.yudao.module.system.convert.student.StudentConvert;
 import cn.iocoder.yudao.module.system.dal.dataobject.student.StudentDO;
 import cn.iocoder.yudao.module.system.dal.mysql.student.StudentMapper;
-import cn.iocoder.yudao.module.system.service.student.StudentService;
+import jodd.util.StringUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -18,7 +20,6 @@ import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.system.enums.ErrorCodeConstants.STUDENT_NOT_EXISTS;
-import static com.baomidou.mybatisplus.core.toolkit.IdWorker.getId;
 
 /**
  * 学员管理 Service 实现类
@@ -34,6 +35,14 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Integer create(StudentCreateReqVO createReqVO) {
+
+
+        StudentExportReqVO vo = new StudentExportReqVO();
+        vo.setName(createReqVO.getName());
+        List<StudentDO> list = getList(vo);
+        if (CollectionUtil.isNotEmpty(list)) {
+            Assert.isTrue(StringUtil.isNotEmpty(createReqVO.getTitle()) && !createReqVO.getTitle().equals(list.get(0).getTitle()), "该学员已存在：名字和小名一致");
+        }
         // 插入
         StudentDO studentDO = StudentConvert.INSTANCE.convert(createReqVO);
         Mapper.insert(studentDO);
@@ -82,6 +91,19 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public List<StudentDO> getList(StudentExportReqVO exportReqVO) {
         return Mapper.selectList(exportReqVO);
+    }
+
+    @Override
+    public StudentDO getByCustomer(Integer customerId) {
+        Assert.isTrue(customerId != null, "客户id为空");
+        StudentExportReqVO exportReqVO = new StudentExportReqVO();
+        exportReqVO.setCustomerId(customerId);
+        List<StudentDO> list = getList(exportReqVO);
+        if (CollectionUtil.isNotEmpty(list)) {
+            Assert.isTrue(list.size() == 1, "客户与会员数据有问题");
+            return list.get(0);
+        }
+        return null;
     }
 
 }

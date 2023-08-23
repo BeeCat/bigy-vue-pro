@@ -9,6 +9,15 @@ export function createCostClassRecord(data) {
   })
 }
 
+// 创建任课记录
+export function handCostClassRecord(data) {
+  return request({
+    url: '/zhh/cost-class-record/handCost',
+    method: 'post',
+    data: data
+  })
+}
+
 // 更新任课记录
 export function updateCostClassRecord(data) {
   return request({

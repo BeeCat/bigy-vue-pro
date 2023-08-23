@@ -9,7 +9,6 @@ import cn.iocoder.yudao.module.system.dal.dataobject.dict.DictDataDO;
 import cn.iocoder.yudao.module.system.dal.mysql.course.CourseMapper;
 import cn.iocoder.yudao.module.system.service.courseClass.CourseClassService;
 import cn.iocoder.yudao.module.system.service.dict.DictDataService;
-import com.alibaba.fastjson.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -103,7 +102,7 @@ public class CourseServiceImpl implements CourseService {
         DictDataDO timeDicDo = dictDataService.getDictData(Long.parseLong(classTimeDicValue));
         DictDataDO classDictDo = dictDataService.getDictData(Long.parseLong(classDicValue));
         classCreateReqVO.setName(updateReqVO.getCourseName() + "-" + classDictDo.getLabel() + "-" + timeDicDo.getLabel());
-        classCreateReqVO.setClassCode(updateReqVO.getCourseCode() + "-" + classDictDo.getValue() + "-" + timeDicDo.getValue());
+        classCreateReqVO.setClassCode(updateReqVO.getCourseCode() + "-" + classDictDo.getValue() + "-" + timeDicDo.getValue() + "-" + updateReqVO.getTeacherId());
         classCreateReqVO.setCourseCode(updateReqVO.getCourseCode());
         classCreateReqVO.setClassRoomCode(updateReqVO.getClassRoomId());
         classCreateReqVO.setTeacherCode(String.valueOf(updateReqVO.getTeacherId()));

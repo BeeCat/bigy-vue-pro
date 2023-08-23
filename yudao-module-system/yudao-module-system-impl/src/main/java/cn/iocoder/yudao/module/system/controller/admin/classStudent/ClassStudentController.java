@@ -5,7 +5,6 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.framework.operatelog.core.annotations.OperateLog;
 import cn.iocoder.yudao.module.system.controller.admin.classStudent.vo.*;
-import cn.iocoder.yudao.module.system.controller.admin.courseClass.vo.CourseClassRespVO;
 import cn.iocoder.yudao.module.system.convert.classStudent.ClassStudentConvert;
 import cn.iocoder.yudao.module.system.dal.dataobject.classStudent.ClassStudentDO;
 import cn.iocoder.yudao.module.system.service.classStudent.ClassStudentService;
@@ -86,6 +85,14 @@ public class ClassStudentController {
     @ApiOperation("获得班级学生分页")
     @PreAuthorize("@ss.hasPermission('zhh:class-student:query')")    public CommonResult<PageResult<ClassStudentRespVO>> getClassStudentPage(@Valid ClassStudentPageReqVO pageVO) {
         PageResult<ClassStudentRespVO> pageResult = classStudentService.getClassStudentPage(pageVO);
+        return success(pageResult);
+    }
+
+    @GetMapping("/pageWithAccount")
+    @ApiOperation("获得班级学生分页")
+    @PreAuthorize("@ss.hasPermission('zhh:class-student:query')")
+    public CommonResult<PageResult<ClassStudentRespVO>> getClassStudentAccountPage(@Valid ClassStudentPageReqVO pageVO) {
+        PageResult<ClassStudentRespVO> pageResult = classStudentService.getClassStudentAccountPage(pageVO);
         return success(pageResult);
     }
 

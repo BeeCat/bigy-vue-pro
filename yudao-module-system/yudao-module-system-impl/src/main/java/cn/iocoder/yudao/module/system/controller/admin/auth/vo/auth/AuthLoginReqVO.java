@@ -30,7 +30,7 @@ public class AuthLoginReqVO {
     private String password;
 
     @ApiModelProperty(value = "验证码", required = true, example = "1024")
-    @NotEmpty(message = "验证码不能为空")
+//    @NotEmpty(message = "验证码不能为空")
     private String code;
 
     @ApiModelProperty(value = "验证码的唯一标识", required = true, example = "9b2ffbc1-7425-4155-9894-9d5c08541d62")

@@ -1,9 +1,9 @@
 package cn.iocoder.yudao.module.system.controller.admin.classStudent.vo;
 
-import lombok.*;
-import java.util.*;
-import io.swagger.annotations.*;
-import javax.validation.constraints.*;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+import java.util.Date;
 
 /**
 * 班级学生 Base VO，提供给添加、修改、详细的子 VO 使用
@@ -28,12 +28,24 @@ public class ClassStudentBaseVO {
     private String studentName;
 
     @ApiModelProperty(value = "班级年龄")
-    private Integer studentAge;
+    private String studentAge;
 
     @ApiModelProperty(value = "班级性别")
     private String studentSex;
 
     @ApiModelProperty(value = "班级地址")
     private String studentAddress;
+
+    /**
+     * 阶段类型
+     */
+    @ApiModelProperty(value = "阶段类型")
+    private String stageType;
+
+    /**
+     * 失效日期
+     */
+    @ApiModelProperty(value = "失效日期")
+    private Date validateTime;
 
 }
